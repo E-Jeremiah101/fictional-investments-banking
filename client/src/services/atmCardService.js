@@ -1,5 +1,7 @@
 import api from "./axios.js";
 
+let myATMCardRequestsPromise;
+
 // Create an ATM card request
 export const createATMCardRequest = async (payload) => {
   const response = await api.post("/atm-cards", payload);
@@ -18,6 +20,14 @@ export const submitATMCardPayment = async (id, receipt) => {
 
 // Get the customer's ATM card requests
 export const getMyATMCardRequests = async () => {
-  const response = await api.get("/atm-cards/my-requests");
-  return response.data;
+  if (!myATMCardRequestsPromise) {
+    myATMCardRequestsPromise = api
+      .get("/atm-cards/my-requests")
+      .then((response) => response.data)
+      .finally(() => {
+        myATMCardRequestsPromise = null;
+      });
+  }
+
+  return myATMCardRequestsPromise;
 };

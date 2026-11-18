@@ -325,11 +325,9 @@ export default function ATMCardApplication() {
     };
 
     loadRequests();
-    const refreshInterval = window.setInterval(loadRequests, 10000);
 
     return () => {
       cancelled = true;
-      window.clearInterval(refreshInterval);
     };
   }, []);
 
