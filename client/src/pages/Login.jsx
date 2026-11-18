@@ -371,7 +371,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck, Lock, Loader2, ChevronRight, Delete } from "lucide-react";
+import { ShieldCheck, Lock, ChevronRight, Delete } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 
 const inputClassName =
@@ -540,13 +540,6 @@ function PinEntryScreen({
           className="mb-2 max-w-xs text-center text-[11px] font-medium text-red-600"
         >
           {error}
-        </p>
-      )}
-
-      {submitting && (
-        <p className="mb-2 inline-flex items-center gap-1.5 text-[11px] text-slate-500">
-          <Loader2 size={12} className="animate-spin" />
-          Verifying…
         </p>
       )}
 
@@ -777,10 +770,7 @@ function Login() {
                     className="inline-flex w-full items-center justify-center gap-2 bg-[#0a2d4d] px-5 py-2.5 text-xs font-semibold tracking-wide text-white transition hover:bg-[#081f36] disabled:opacity-60 sm:w-auto sm:py-2"
                   >
                     {submitting ? (
-                      <>
-                        <Loader2 size={14} className="animate-spin" />
-                        Verifying…
-                      </>
+                      "Verifying…"
                     ) : (
                       <>
                         Sign In

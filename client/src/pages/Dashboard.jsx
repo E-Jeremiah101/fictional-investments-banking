@@ -61,8 +61,6 @@ function Dashboard() {
   const [account, setAccount] = useState(null);
   const [transactions, setTransactions] = useState([]);
 
-  const [accountLoading, setAccountLoading] = useState(true);
-  const [transactionsLoading, setTransactionsLoading] = useState(true);
   const [accountError, setAccountError] = useState("");
   const [transactionError, setTransactionError] = useState("");
 
@@ -81,8 +79,6 @@ function Dashboard() {
         error.response?.data?.message ||
           "Unable to load your account information.",
       );
-    } finally {
-      setAccountLoading(false);
     }
   };
 
@@ -95,8 +91,6 @@ function Dashboard() {
       setTransactionError(
         error.response?.data?.message || "Unable to load your transactions.",
       );
-    } finally {
-      setTransactionsLoading(false);
     }
   };
 
@@ -202,11 +196,9 @@ function Dashboard() {
                 </button>
               </div>
               <h3 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-                {accountLoading
+                {accountError || !account
                   ? ""
-                  : accountError
-                    ? ""
-                    : showBalance
+                  : showBalance
                       ? formatMoney(balance, currency)
                       : "••••••••"}
               </h3>
@@ -219,7 +211,7 @@ function Dashboard() {
                     Account number
                   </p>
                   <p className="mt-1 font-mono text-sm tracking-wide">
-                    {accountLoading ? "Loading…" : account?.accountNumber || ""}
+                    {account?.accountNumber || ""}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 rounded-xl bg-white/10 px-3.5 py-2.5 backdrop-blur">
@@ -232,6 +224,9 @@ function Dashboard() {
 
           {/* Quick actions */}
           <div className="lg:px-8">
+            <h2 className="mb-3 text-lg font-semibold text-slate-900">
+              Services &amp; Financial Tools
+            </h2>
             <section
               aria-label="Quick actions"
               className="grid grid-cols-2 gap-4 sm:grid-cols-2  "
@@ -259,7 +254,6 @@ function Dashboard() {
               </div>
               <TransactionTable
                 transactions={transactions.slice(0, 5)}
-                loading={transactionsLoading}
                 error={transactionError}
                 currency={currency}
               />
@@ -293,7 +287,6 @@ function Dashboard() {
           </div>
           <TransactionTable
             transactions={filteredTransactions}
-            loading={transactionsLoading}
             error={transactionError}
             currency={currency}
           />
@@ -316,11 +309,9 @@ function Dashboard() {
               </div>
             </div>
 
-            {accountLoading ? (
-              <p className="mt-6 text-sm text-slate-500">Loading account…</p>
-            ) : accountError ? (
+            {accountError ? (
               <p className="mt-6 text-sm text-rose-600">{accountError}</p>
-            ) : (
+            ) : account ? (
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
                 <WalletDetail
                   label="Available Balance"
@@ -368,19 +359,15 @@ function Dashboard() {
                   }
                 />
               </div>
-            )}
+            ) : null}
           </div>
         </section>
       )}
-
     </div>
   );
 }
 
-function TransactionTable({ transactions, loading, error, currency }) {
-  if (loading) {
-    return <p className="p-6 text-sm text-slate-500">Loading transactions…</p>;
-  }
+function TransactionTable({ transactions, error, currency }) {
   if (error) {
     return <p className="p-6 text-sm text-rose-600">{error}</p>;
   }

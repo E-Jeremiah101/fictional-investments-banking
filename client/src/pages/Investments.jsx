@@ -533,7 +533,6 @@ import { useNavigate } from "react-router-dom";
 import {
   ArrowUpRight,
   ArrowDownRight,
-  LoaderCircle,
   RefreshCw,
   X,
   Lock,
@@ -703,7 +702,7 @@ export default function Investments() {
             </div>
 
             <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums md:text-4xl">
-              {loading ? "…" : formatMoney(investment?.earnings)}
+              {formatMoney(investment?.earnings)}
             </p>
 
             <div className="mt-6 grid grid-cols-2 gap-4 border-t border-white/10 pt-4">
@@ -712,7 +711,7 @@ export default function Investments() {
                   Total deposits
                 </p>
                 <p className="mt-1 text-[15px] font-semibold tabular-nums">
-                  {loading ? "…" : formatMoney(investment?.totalDeposits)}
+                  {formatMoney(investment?.totalDeposits)}
                 </p>
               </div>
             </div>
@@ -769,7 +768,6 @@ export default function Investments() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2 rounded-md bg-slate-50 px-3 py-2 text-[11px] text-slate-500">
-                  <LoaderCircle size={12} className="animate-spin" />
                   Awaiting approval
                 </div>
               </div>
@@ -789,11 +787,7 @@ export default function Investments() {
                   }
                   className="flex w-full items-center justify-center gap-2 rounded-md bg-[#0b3b8c] px-4 py-2.5 text-[12.5px] font-semibold text-white transition hover:bg-[#092f70] disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {activating ? (
-                    <LoaderCircle size={14} className="animate-spin" />
-                  ) : (
-                    <Lock size={14} />
-                  )}
+                  <Lock size={14} />
                   Activate trading
                 </button>
                 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { LoaderCircle, RefreshCw, TrendingUp, Wallet } from "lucide-react";
+import { RefreshCw, TrendingUp, Wallet } from "lucide-react";
 import {
   adjustInvestorEarnings,
   getAdminInvestors,
@@ -116,7 +116,7 @@ export default function AdminInvestments() {
           disabled={loading}
           className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
         >
-          <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
+          <RefreshCw size={15} />
           Refresh
         </button>
       </header>
@@ -148,11 +148,7 @@ export default function AdminInvestments() {
               {investors.length === 1 ? "" : "s"}
             </p>
           </div>
-          {loading ? (
-            <div className="flex justify-center p-10 text-slate-500">
-              <LoaderCircle className="animate-spin" />
-            </div>
-          ) : investors.length === 0 ? (
+          {investors.length === 0 ? (
             <p className="p-6 text-sm text-slate-500">
               No active trading accounts yet. Approving a customer's activation
               deposit adds them here.
@@ -264,7 +260,7 @@ export default function AdminInvestments() {
             </>
           ) : (
             <p className="mt-3 text-sm text-slate-500">
-              {loading ? "Loading investors…" : "Select an active investor."}
+              Select an active investor.
             </p>
           )}
         </section>

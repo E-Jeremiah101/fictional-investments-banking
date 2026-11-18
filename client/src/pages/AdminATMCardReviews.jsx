@@ -7,7 +7,6 @@ import {
   Clock3,
   UserRound,
   Wallet,
-  LoaderCircle,
 } from "lucide-react";
 
 import PaymentReceipt from "../components/PaymentReceipt";
@@ -127,7 +126,7 @@ export default function AdminATMCardReviews() {
               disabled={loading}
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold transition hover:bg-slate-100 disabled:opacity-60 sm:w-auto"
             >
-              <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+              <RefreshCw size={16} />
               Refresh requests
             </button>
             </div>
@@ -147,7 +146,7 @@ export default function AdminATMCardReviews() {
             </div>
 
             <p className="mt-4 text-3xl font-bold tabular-nums">
-              {loading ? "..." : requests.length}
+              {requests.length}
             </p>
           </div>
 
@@ -162,7 +161,7 @@ export default function AdminATMCardReviews() {
             </div>
 
             <p className="mt-4 text-3xl font-bold tabular-nums">
-              {loading ? "..." : formatMoney(pendingTotal)}
+              {formatMoney(pendingTotal)}
             </p>
           </div>
         </section>
@@ -188,12 +187,7 @@ export default function AdminATMCardReviews() {
 
           </div>
 
-          {loading ? (
-            <div className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-16 text-slate-500">
-              <LoaderCircle size={20} className="mr-2 animate-spin" />
-              Loading ATM card requests...
-            </div>
-          ) : requests.length === 0 ? (
+          {requests.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-16 text-center">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
                 <CreditCard size={26} />
@@ -230,12 +224,10 @@ export default function AdminATMCardReviews() {
                           </p>
                         </div>
                       </div>
-
                       <span className="w-fit rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800">
                         Awaiting review
                       </span>
                     </div>
-
                     <div className="grid gap-5 p-5 sm:grid-cols-2 lg:grid-cols-3">
                       <div>
                         <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
@@ -379,11 +371,7 @@ export default function AdminATMCardReviews() {
                           disabled={reviewingId === request.id}
                           className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          {reviewingId === request.id ? (
-                            <LoaderCircle size={17} className="animate-spin" />
-                          ) : (
-                            <CheckCircle2 size={17} />
-                          )}
+                          <CheckCircle2 size={17} />
                           Approve request
                         </button>
 

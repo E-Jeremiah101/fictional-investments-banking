@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  LoaderCircle,
   AlertCircle,
   CheckCircle2,
   ClipboardCheck,
@@ -120,7 +119,7 @@ export default function AdminRemittances() {
           disabled={loading}
           className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-[12px] font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
         >
-          <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
+          <RefreshCw size={13} />
           Refresh
         </button>
       </div>
@@ -143,9 +142,7 @@ export default function AdminRemittances() {
       )}
 
       {/* Content */}
-      {loading ? (
-        <LoadingState />
-      ) : requests.length === 0 ? (
+      {requests.length === 0 ? (
         <EmptyState />
       ) : (
         <ul className="space-y-4">
@@ -293,14 +290,7 @@ export default function AdminRemittances() {
                     disabled={isReviewing}
                     className="flex items-center justify-center gap-2 rounded-md bg-[#0b3b8c] px-5 py-2.5 text-[12.5px] font-semibold text-white transition hover:bg-[#092f70] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {isReviewing ? (
-                      <>
-                        <LoaderCircle size={14} className="animate-spin" />
-                        Processing…
-                      </>
-                    ) : (
-                      "Approve simulation"
-                    )}
+                    Approve simulation
                   </button>
                 </div>
               </li>
@@ -313,15 +303,6 @@ export default function AdminRemittances() {
         PrimeStone Capital administrator console · Educational simulation only. No real
         funds are held or transferred.
       </p>
-    </div>
-  );
-}
-
-function LoadingState() {
-  return (
-    <div className="flex items-center justify-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-6 py-12 text-[13px] text-slate-500">
-      <LoaderCircle size={16} className="animate-spin" />
-      Loading requests…
     </div>
   );
 }

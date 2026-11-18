@@ -7,7 +7,6 @@ import {
   Clock3,
   CreditCard,
   KeyRound,
-  LoaderCircle,
   RefreshCw,
   ShieldCheck,
   UserRound,
@@ -163,7 +162,7 @@ export default function AdminTaxPins() {
               disabled={loading}
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold transition hover:bg-slate-100 disabled:opacity-60"
             >
-              <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+              <RefreshCw size={16} />
               Refresh
             </button>
           </div>
@@ -230,12 +229,7 @@ export default function AdminTaxPins() {
         <section className="space-y-4">
        
 
-          {loading ? (
-            <div className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-16 text-slate-500">
-              <LoaderCircle size={20} className="mr-2 animate-spin" />
-              Loading Tax PIN payment submissions...
-            </div>
-          ) : withdrawals.length === 0 ? (
+          {withdrawals.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-16 text-center">
               <Clock3 size={34} className="mx-auto text-slate-400" />
               <h4 className="mt-4 font-bold">No Tax PIN receipts to review</h4>
@@ -334,14 +328,7 @@ export default function AdminTaxPins() {
                             }
                             className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:opacity-60"
                           >
-                            {reviewingId === withdrawal.id ? (
-                              <LoaderCircle
-                                size={16}
-                                className="animate-spin"
-                              />
-                            ) : (
-                              <CheckCircle2 size={16} />
-                            )}
+                            <CheckCircle2 size={16} />
                             Approve receipt
                           </button>
                         </>
@@ -352,11 +339,7 @@ export default function AdminTaxPins() {
                           disabled={Boolean(generatingId) || Boolean(reviewingId)}
                           className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          {generatingId === withdrawal.id ? (
-                            <LoaderCircle size={17} className="animate-spin" />
-                          ) : (
-                            <KeyRound size={17} />
-                          )}
+                          <KeyRound size={17} />
                           {generatingId === withdrawal.id
                             ? "Generating..."
                             : withdrawal.taxPin.status === "pending"

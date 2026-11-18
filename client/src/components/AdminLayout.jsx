@@ -281,7 +281,6 @@ export default function AdminLayout({
                 >
                   <RefreshCw
                     size={16}
-                    className={refreshing ? "animate-spin" : ""}
                   />
                 </button>
               )}

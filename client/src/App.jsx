@@ -143,6 +143,7 @@ import LandingPage from "./pages/LandingPage";
 import AppLayout from "./components/AppLayout";
 import AppmobileLayout from "./components/AppmobileLayout";
 import AdminLayout from "./components/AdminLayout";
+import GlobalLoadingOverlay from "./components/GlobalLoadingOverlay";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -158,8 +159,8 @@ import ATMCard from "./pages/ATMCard";
 import ATMCardPayment from "./pages/ATMCardPayment";
 import AdminATMCardReviews from "./pages/AdminATMCardReviews";
 import TaxPin from "./pages/TaxPin";
-import Remittance from "./pages/Remittance";
-import AdminRemittances from "./pages/AdminRemittances";
+import Remittance from "./pages/Remittance.jsx";
+import AdminRemittances from "./pages/AdminRemittances.jsx";
 import AdminTaxPins from "./pages/AdminTaxPins";
 import AdminUsers from "./pages/AdminUsers";
 import Withdrawal from "./pages/Withdrawal";
@@ -170,13 +171,7 @@ import AdminPaymentInstructions from "./pages/AdminPaymentInstructions";
 
 function PublicRoute({ children }) {
   const { user, loading } = useAuth();
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        Checking your session...
-      </div>
-    );
-  }
+  if (loading) return null;
   if (user) return <Navigate to="/dashboard" replace />;
   return children;
 }
@@ -184,13 +179,7 @@ function PublicRoute({ children }) {
 // Landing route — shows landing for guests, redirects logged-in users
 function LandingRoute() {
   const { user, loading } = useAuth();
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        Checking your session...
-      </div>
-    );
-  }
+  if (loading) return null;
   if (user) return <Navigate to="/dashboard" replace />;
   return <LandingPage />;
 }
@@ -276,6 +265,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <GlobalLoadingOverlay />
         <AppRoutes />
       </AuthProvider>
     </BrowserRouter>

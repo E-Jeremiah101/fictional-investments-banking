@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LoaderCircle, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import {
   getPaymentInstructions,
   updatePaymentInstructions,
@@ -94,13 +94,7 @@ export default function AdminPaymentInstructions() {
         onSubmit={handleSubmit}
         className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7"
       >
-        {loading ? (
-          <div className="flex items-center justify-center gap-2 py-12 text-sm text-slate-500">
-            <LoaderCircle size={18} className="animate-spin" />
-            Loading current details…
-          </div>
-        ) : (
-          <>
+        <>
             <div className="grid gap-5 sm:grid-cols-2">
               {fields.map(({ name, label, maxLength }) => (
                 <label
@@ -127,15 +121,10 @@ export default function AdminPaymentInstructions() {
               disabled={saving}
               className="mt-6 inline-flex items-center gap-2 rounded-lg bg-blue-700 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-800 disabled:opacity-60"
             >
-              {saving ? (
-                <LoaderCircle size={16} className="animate-spin" />
-              ) : (
-                <Save size={16} />
-              )}
+              <Save size={16} />
               Save payment details
             </button>
-          </>
-        )}
+        </>
       </form>
     </div>
   );

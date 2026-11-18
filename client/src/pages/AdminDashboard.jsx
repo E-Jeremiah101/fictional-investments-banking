@@ -12,7 +12,6 @@ import {
   CheckCircle2,
   Clock3,
   AlertCircle,
-  LoaderCircle,
   ChevronRight,
   CalendarDays,
   CreditCard,
@@ -206,14 +205,14 @@ export default function AdminDashboard() {
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard
           title="Pending deposits"
-          value={loading ? "…" : requests.length.toString()}
+          value={requests.length.toString()}
           description="Requests awaiting review"
           icon={Clock3}
           color="bg-blue-50 text-blue-600"
         />
         <StatCard
           title="Pending demo value"
-          value={loading ? "…" : formatMoney(pendingTotal)}
+          value={formatMoney(pendingTotal)}
           description="Fictional USD deposit amounts"
           icon={Wallet}
           color="bg-violet-50 text-violet-600"
@@ -289,9 +288,7 @@ export default function AdminDashboard() {
           </Link>
         </div>
 
-        {loading ? (
-          <LoadingState />
-        ) : requests.length === 0 ? (
+        {requests.length === 0 ? (
           <EmptyState />
         ) : (
           <ul className="divide-y divide-slate-100">
@@ -349,15 +346,6 @@ function StatCard({ title, value, description, icon: Icon, color }) {
           <Icon size={19} />
         </div>
       </div>
-    </div>
-  );
-}
-
-function LoadingState() {
-  return (
-    <div className="flex items-center justify-center gap-2.5 px-6 py-12 text-[13px] text-slate-500">
-      <LoaderCircle size={16} className="animate-spin" />
-      Loading deposit requests…
     </div>
   );
 }

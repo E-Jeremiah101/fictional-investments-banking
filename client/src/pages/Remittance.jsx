@@ -367,7 +367,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ReceiptText,
-  LoaderCircle,
   AlertCircle,
   CheckCircle2,
   Info,
@@ -764,12 +763,7 @@ export default function Remittance() {
           </div>
 
           <div className="px-6 py-5">
-            {loading ? (
-              <div className="flex items-center justify-center gap-2.5 px-6 py-12 text-[13px] text-gray-500">
-                <LoaderCircle size={16} className="animate-spin" />
-                Loading remittance requests…
-              </div>
-            ) : requests.length === 0 ? (
+            {loading ? null : requests.length === 0 ? (
               <div className="px-6 py-12 text-center">
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
                   <ReceiptText size={22} />
@@ -920,13 +914,7 @@ export default function Remittance() {
                             className="flex items-center justify-center gap-2 rounded-md bg-[#0b3b8c] px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#092f70] disabled:cursor-not-allowed disabled:opacity-60"
                           >
                             {submitting ? (
-                              <>
-                                <LoaderCircle
-                                  size={14}
-                                  className="animate-spin"
-                                />
-                                Submitting…
-                              </>
+                              "Submitting…"
                             ) : (
                               "Submit payment receipt"
                             )}

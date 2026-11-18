@@ -59,7 +59,6 @@ app.use("/api/investments", investmentRoutes);
 app.use("/api/payment-instructions", paymentInstructionsRoutes);
 app.use("/api/admin/investments", adminInvestmentRoutes);
 
-
 // app.get("/", (req, res) => {
 //   res.json({
 //     success: true,

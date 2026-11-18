@@ -8,7 +8,6 @@ import {
   EyeOff,
   CheckCircle2,
   AlertCircle,
-  LoaderCircle,
   ShieldCheck,
   Mail,
   Phone,
@@ -361,12 +360,7 @@ export default function Settings() {
           </div>
         </div>
 
-        {loadingAccount ? (
-          <div className="flex items-center justify-center gap-2.5 px-6 py-12 text-[13px] text-slate-500">
-            <LoaderCircle size={16} className="animate-spin" />
-            Loading profile…
-          </div>
-        ) : (
+        {loadingAccount ? null : (
           <div className="grid gap-3 p-6 sm:grid-cols-2 lg:grid-cols-3">
             {personalFields.map((f) => (
               <Detail
@@ -503,9 +497,6 @@ export default function Settings() {
                   disabled={passwordState.loading}
                   className="inline-flex items-center gap-2 rounded-md bg-[#0b3b8c] px-4 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#092f70] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {passwordState.loading && (
-                    <LoaderCircle size={14} className="animate-spin" />
-                  )}
                   {passwordState.loading
                     ? "Updating password…"
                     : "Update password"}
@@ -568,9 +559,6 @@ export default function Settings() {
                   disabled={pinState.loading}
                   className="inline-flex items-center gap-2 rounded-md bg-[#0b3b8c] px-4 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#092f70] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {pinState.loading && (
-                    <LoaderCircle size={14} className="animate-spin" />
-                  )}
                   {pinState.loading
                     ? "Updating PIN…"
                     : "Update transaction PIN"}

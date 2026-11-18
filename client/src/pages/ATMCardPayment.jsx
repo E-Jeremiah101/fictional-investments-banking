@@ -195,7 +195,6 @@ import {
   CreditCard,
   CheckCircle2,
   AlertCircle,
-  LoaderCircle,
   ShieldCheck,
   UploadCloud,
   FileText,
@@ -531,10 +530,7 @@ export default function ATMCardPayment() {
                       className="flex items-center justify-center gap-2 rounded-md bg-[#0b3b8c] px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#092f70] disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {submitting ? (
-                        <>
-                          <LoaderCircle size={14} className="animate-spin" />
-                          Submitting…
-                        </>
+                        "Submitting…"
                       ) : (
                         "Submit"
                       )}

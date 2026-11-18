@@ -5,7 +5,6 @@ import {
   Lock,
   ChevronRight,
   Check,
-  Loader2,
   Phone,
   FileText,
 } from "lucide-react";
@@ -581,10 +580,7 @@ function Register() {
                   className="inline-flex w-full items-center justify-center gap-2 bg-[#0a2d4d] px-5 py-2.5 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-[#081f36] disabled:opacity-60 sm:w-auto sm:py-2"
                 >
                   {submitting ? (
-                    <>
-                      <Loader2 size={14} className="animate-spin" />
-                      Creating account…
-                    </>
+                    "Creating account…"
                   ) : (
                     <>Create account</>
                   )}

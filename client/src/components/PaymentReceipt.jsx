@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FileText, LoaderCircle } from "lucide-react";
+import { FileText } from "lucide-react";
 import api from "../services/axios.js";
 
 export default function PaymentReceipt({ endpoint, fileName, contentType }) {
@@ -31,14 +31,7 @@ export default function PaymentReceipt({ endpoint, fileName, contentType }) {
   if (error) {
     return <p className="mt-2 text-sm text-rose-700">{error}</p>;
   }
-  if (!receiptUrl) {
-    return (
-      <p className="mt-2 flex items-center gap-2 text-sm text-slate-500">
-        <LoaderCircle size={14} className="animate-spin" />
-        Loading receipt…
-      </p>
-    );
-  }
+  if (!receiptUrl) return null;
 
   return (
     <div className="mt-2 space-y-2">

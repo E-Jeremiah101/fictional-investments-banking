@@ -4,7 +4,6 @@ import {
   ShieldCheck,
   ArrowRight,
   AlertCircle,
-  LoaderCircle,
   ChevronDown,
   Sparkles,
   Zap,
@@ -136,24 +135,22 @@ const levels = [
   },
 ];
 
+
 const faqs = [
   {
-    q: "Will I receive a real Virtual Card?",
-    a: "No. After approval, the app displays a fictional, non-functional card number and expiry for educational use. No physical or usable card is issued.",
+    q: "Will I receive a Virtual Card?",
+    a: "Once approved, your virtual card details will be displayed in your account for purposes.",
   },
   {
-    q: "Can I use this card for purchases or cash withdrawals?",
-    a: "No. The card preview and application process are simulated and cannot be used for real purchases or withdrawals.",
+    q: "Can I use the card for purchases or cash withdrawals?",
+    a: "The virtual card is enabled for transactions and purchases",
   },
   {
     q: "What are the differences between card levels?",
-    a: "The four simulated levels have different fictional fees and starting daily limits. You can adjust the limit within the range shown on the application.",
-  },
-  {
-    q: "Will a real fee be charged?",
-    a: "No. The displayed fees and any receipt submitted for review are fictional demonstration data only.",
+    a: "Each card level offers different demonstration fees and daily transaction limits, allowing you to explore the available account options.",
   },
 ];
+
 
 const formatMoney = (n, currency = "USD") =>
   new Intl.NumberFormat("en-US", {
@@ -163,9 +160,7 @@ const formatMoney = (n, currency = "USD") =>
     maximumFractionDigits: 2,
   }).format(Number(n) || 0);
 
-/* ============================================================
-   Live card preview
-   ============================================================ */
+
 
 function CardPreview({
   brand,
@@ -246,9 +241,7 @@ function CardPreview({
   );
 }
 
-/* ============================================================
-   Small helpers
-   ============================================================ */
+
 
 function Section({ title, description, children }) {
   return (
@@ -283,9 +276,7 @@ function Field({ id, label, hint, children }) {
   );
 }
 
-/* ============================================================
-   Page
-   ============================================================ */
+
 
 export default function ATMCardApplication() {
   const navigate = useNavigate();
@@ -431,7 +422,6 @@ export default function ATMCardApplication() {
               Apply for a Virtual Card
             </h1>
           </div>
-
         </div>
       </div>
 
@@ -445,9 +435,7 @@ export default function ATMCardApplication() {
       )}
 
       <Section title="Your Card">
-        {requestsLoading ? (
-          <p className="text-[12px] text-gray-500">Loading applications…</p>
-        ) : requests.length === 0 ? (
+        {requestsLoading ? null : requests.length === 0 ? (
           <p className="text-[12px] text-gray-500">
             You have no Virtual Card applications yet.
           </p>
@@ -468,8 +456,6 @@ export default function ATMCardApplication() {
                   className="space-y-4 py-4 first:pt-0 last:pb-0"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
-   
-  
                     {needsPayment && (
                       <button
                         type="button"
@@ -487,7 +473,7 @@ export default function ATMCardApplication() {
                         Continue to payment
                       </button>
                     )}
-     
+
                     {request.status === "rejected" && (
                       <span className="text-[11px] font-semibold text-rose-700">
                         Application rejected
@@ -535,7 +521,6 @@ export default function ATMCardApplication() {
                             )}
                           />
                         </dl>
-  
                       </div>
                     </div>
                   )}
@@ -559,10 +544,7 @@ export default function ATMCardApplication() {
         {/* Right: form */}
         <div className="space-y-6">
           {/* Brand picker */}
-          <Section
-            title="Choose Details"
-            description="Card Types"
-          >
+          <Section title="Choose Details" description="Card Types">
             <div className="grid gap-3 sm:grid-cols-3">
               {brands.map((b) => {
                 const isSelected = brand === b.id;
@@ -606,9 +588,7 @@ export default function ATMCardApplication() {
             </div>
           </Section>
 
-          <Section
-            title="Choose card level"
-          >
+          <Section title="Choose card level">
             <div className="grid gap-3 sm:grid-cols-2">
               {levels.map((cardLevel) => {
                 const isSelected = level === cardLevel.id;
@@ -648,11 +628,7 @@ export default function ATMCardApplication() {
           {/* Limits & currency */}
           <Section title="Limits & currency">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field
-                id="dailyLimit"
-                label="Daily spending limit"
-
-              >
+              <Field id="dailyLimit" label="Daily spending limit">
                 <div className="flex items-stretch gap-2">
                   <input
                     id="dailyLimit"
@@ -686,15 +662,9 @@ export default function ATMCardApplication() {
           </Section>
 
           {/* Billing */}
-          <Section
-            title="Billing information"
-            
-          >
+          <Section title="Billing information">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field
-                id="cardholderName"
-                label="Cardholder name *"
-              >
+              <Field id="cardholderName" label="Cardholder name *">
                 <input
                   id="cardholderName"
                   type="text"
@@ -706,10 +676,7 @@ export default function ATMCardApplication() {
                 />
               </Field>
               <div className="sm:col-span-2">
-                <Field
-                  id="billingAddress"
-                  label="Billing address *"
-                >
+                <Field id="billingAddress" label="Billing address *">
                   <textarea
                     id="billingAddress"
                     rows={3}
@@ -786,9 +753,8 @@ export default function ATMCardApplication() {
           ))}
         </div>
 
-
         {/* Terms */}
-        <div className="rounded-xl border border-gray-200 bg-white p-4">
+        <div className="rounded-xl   bg-white p-4 mt-3">
           <label className="flex items-start gap-2.5 text-[12px] leading-5 text-gray-700">
             <input
               type="checkbox"
@@ -797,9 +763,8 @@ export default function ATMCardApplication() {
               className="mt-0.5 h-3.5 w-3.5 accent-[#0b3b8c]"
             />
             <span>
-              I confirm the information is fictional and understand this is a
-              simulated banking environment. No card or real payment will be
-              issued.
+              I agree to the platform's terms and conditions,
+              including its transaction and verification policies.
             </span>
           </label>
         </div>
@@ -863,10 +828,7 @@ export default function ATMCardApplication() {
             className="flex items-center justify-center gap-2 rounded-md bg-[#0b3b8c] px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#092f70] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {submitting ? (
-              <>
-                <LoaderCircle size={14} className="animate-spin" />
-                Processing…
-              </>
+              "Processing…"
             ) : (
               <>
                 {activeRequest

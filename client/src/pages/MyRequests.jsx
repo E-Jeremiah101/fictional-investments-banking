@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  RefreshCw,
   Clock3,
   CheckCircle2,
   XCircle,
@@ -193,12 +192,7 @@ export default function MyRequests() {
         </div>
       )}
 
-      {loading ? (
-        <div className="flex items-center justify-center gap-2.5 rounded-md border border-gray-200 bg-white px-6 py-14 text-[13px] text-gray-500">
-          <RefreshCw size={16} className="animate-spin" />
-          Loading your requests…
-        </div>
-      ) : withdrawals.length === 0 ? (
+      {loading ? null : withdrawals.length === 0 ? (
         <div className="rounded-md border border-gray-200 bg-white px-6 py-14 text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
             <FileText size={22} />

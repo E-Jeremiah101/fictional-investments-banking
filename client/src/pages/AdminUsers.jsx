@@ -6,7 +6,6 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
-  LoaderCircle,
   RefreshCw,
   ShieldCheck,
   UserRound,
@@ -214,7 +213,6 @@ export default function AdminUsers() {
               >
                 <RefreshCw
                   size={16}
-                  className={loading ? "animate-spin" : ""}
                 />
                 Refresh
               </button>
@@ -248,7 +246,7 @@ export default function AdminUsers() {
                   Registered customers
                 </p>
                 <p className="mt-2 text-3xl font-bold tabular-nums">
-                  {loading ? "..." : totalUsers}
+                  {totalUsers}
                 </p>
               </div>
               <Users className="text-blue-700" size={24} />
@@ -261,11 +259,7 @@ export default function AdminUsers() {
                   Select a user to review their account and history.
                 </p>
               </div>
-              {loading ? (
-                <div className="flex justify-center p-10 text-slate-500">
-                  <LoaderCircle className="animate-spin" />
-                </div>
-              ) : users.length === 0 ? (
+              {users.length === 0 ? (
                 <p className="p-6 text-sm text-slate-500">
                   No customers found.
                 </p>
@@ -341,12 +335,7 @@ export default function AdminUsers() {
           </div>
 
           <div className="space-y-6">
-            {detailsLoading ? (
-              <div className="flex min-h-48 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500">
-                <LoaderCircle className="mr-2 animate-spin" />
-                Loading customer details...
-              </div>
-            ) : selectedUser ? (
+            {selectedUser ? (
               <>
                 <section className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
                   <div className="flex flex-wrap items-start justify-between gap-4">

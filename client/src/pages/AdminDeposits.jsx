@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   XCircle,
   AlertCircle,
-  LoaderCircle,
   RefreshCw,
   ArrowDownToLine,
   Building2,
@@ -125,7 +124,7 @@ export default function AdminDeposits() {
           disabled={loading}
           className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-[12px] font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
         >
-          <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
+          <RefreshCw size={13} />
           Refresh
         </button>
       </div>
@@ -151,13 +150,13 @@ export default function AdminDeposits() {
       <section className="grid gap-4 sm:grid-cols-2">
         <StatCard
           title="Pending requests"
-          value={loading ? "…" : requests.length.toString()}
+          value={requests.length.toString()}
           icon={Clock3}
           color="bg-blue-50 text-blue-600"
         />
         <StatCard
           title="Total pending value"
-          value={loading ? "…" : formatMoney(pendingTotal)}
+          value={formatMoney(pendingTotal)}
           icon={Wallet}
           color="bg-violet-50 text-violet-600"
         />
@@ -172,9 +171,7 @@ export default function AdminDeposits() {
 
         </div>
 
-        {loading ? (
-          <LoadingState />
-        ) : requests.length === 0 ? (
+        {requests.length === 0 ? (
           <EmptyState />
         ) : (
           <ul className="divide-y divide-slate-100">
@@ -293,11 +290,7 @@ export default function AdminDeposits() {
                     disabled={reviewingId === request.id}
                     className="flex items-center justify-center gap-2 rounded-md bg-[#0b3b8c] px-5 py-2.5 text-[12.5px] font-semibold text-white transition hover:bg-[#092f70] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {reviewingId === request.id ? (
-                      <LoaderCircle size={14} className="animate-spin" />
-                    ) : (
-                      <CheckCircle2 size={14} />
-                    )}
+                    <CheckCircle2 size={14} />
                     {reviewingId === request.id
                       ? "Processing…"
                       : "Approve"}
@@ -344,15 +337,6 @@ function Detail({ label, value, capitalize }) {
       >
         {value}
       </p>
-    </div>
-  );
-}
-
-function LoadingState() {
-  return (
-    <div className="flex items-center justify-center gap-2.5 px-6 py-12 text-[13px] text-slate-500">
-      <LoaderCircle size={16} className="animate-spin" />
-      Loading deposit requests…
     </div>
   );
 }

@@ -8,7 +8,6 @@ import {
   FileText,
   Info,
   KeyRound,
-  LoaderCircle,
   ShieldCheck,
 } from "lucide-react";
 
@@ -257,12 +256,7 @@ export default function TaxPin() {
           </header>
 
           <div className="px-6 py-5">
-            {loading ? (
-              <div className="flex items-center justify-center gap-2.5 px-6 py-12 text-[13px] text-gray-500">
-                <LoaderCircle size={16} className="animate-spin" />
-                Loading your Tax PIN requests…
-              </div>
-            ) : withdrawals.length === 0 ? (
+            {loading ? null : withdrawals.length === 0 ? (
               <div className="px-6 py-12 text-center">
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
                   <KeyRound size={22} />
@@ -417,13 +411,7 @@ export default function TaxPin() {
                           className="flex items-center justify-center gap-2 rounded-md bg-[#0b3b8c] px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#092f70] disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {submitting ? (
-                            <>
-                              <LoaderCircle
-                                size={14}
-                                className="animate-spin"
-                              />
-                              Submitting…
-                            </>
+                            "Submitting…"
                           ) : (
                             <>
                               Submit receipt for review
@@ -468,13 +456,7 @@ export default function TaxPin() {
                         className="flex items-center justify-center gap-2 rounded-md bg-[#0b3b8c] px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#092f70] disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {submitting ? (
-                          <>
-                            <LoaderCircle
-                              size={14}
-                              className="animate-spin"
-                            />
-                            Verifying…
-                          </>
+                          "Verifying…"
                         ) : (
                           <>
                             Verify Tax PIN
