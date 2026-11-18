@@ -1,0 +1,13 @@
+{
+  "name": "fictional-investments-banking",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npm install --prefix server && npm install --prefix client && npm run build --prefix client",
+    "dev": "nodemon server.js",
+    "start": "npm start --prefix server"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

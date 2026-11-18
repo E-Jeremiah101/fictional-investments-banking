@@ -20,7 +20,14 @@ import adminUserRoutes from "./routes/adminUserRoutes.js";
 import investmentRoutes from "./routes/investmentRoutes.js";
 import paymentInstructionsRoutes from "./routes/paymentInstructionsRoutes.js";
 import adminInvestmentRoutes from "./routes/adminInvestmentRoutes.js";
+import path from "path";
+import { fileURLToPath } from "url";
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const clientDistPath = path.resolve(__dirname, "../client/dist");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -53,18 +60,29 @@ app.use("/api/payment-instructions", paymentInstructionsRoutes);
 app.use("/api/admin/investments", adminInvestmentRoutes);
 
 
-app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Online Banking Simulator API is running",
-  });
-});
+// app.get("/", (req, res) => {
+//   res.json({
+//     success: true,
+//     message: "Online Banking API is running",
+//   });
+// });
 
 app.get("/api/health", (req, res) => {
   res.json({
     success: true,
     message: "API is healthy",
   });
+});
+
+app.use(express.static(clientDistPath));
+
+// React Router fallback
+app.get("/{*splat}", (req, res, next) => {
+  if (req.path.startsWith("/api/")) {
+    return next();
+  }
+
+  res.sendFile(path.join(clientDistPath, "index.html"));
 });
 
 const startServer = async () => {
