@@ -288,6 +288,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import SupportChatWidget from "./SupportChatWidget";
 
 const navigation = [
   { label: "Overview", to: "/dashboard", icon: LayoutDashboard },
@@ -592,7 +593,6 @@ export default function AppLayout({ children }) {
                 Sign out
               </button>
             </div>
-  
           </div>
         </div>
       </div>
@@ -655,6 +655,7 @@ export default function AppLayout({ children }) {
           <div className="mx-auto max-w-6xl">{children}</div>
         </main>
       </div>
+      <SupportChatWidget />
     </div>
   );
 }

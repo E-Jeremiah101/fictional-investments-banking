@@ -14,6 +14,8 @@ import adminTaxPinRoutes from "./routes/adminTaxPinRoutes.js";
 import taxPinRoutes from "./routes/taxPinRoutes.js";
 import withdrawalRoutes from "./routes/withdrawalRoutes.js";
 // import adminWithdrawalRoutes from "./routes/adminWithdrawalRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
+import adminChatRoutes from "./routes/adminChatRoutes.js";
 import remittanceRoutes from "./routes/remittanceRoutes.js";
 import adminRemittanceRoutes from "./routes/adminRemittanceRoutes.js";
 import adminUserRoutes from "./routes/adminUserRoutes.js";
@@ -42,6 +44,8 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/admin/chat", adminChatRoutes);
 app.use("/api/account", accountRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/deposits", depositRoutes);
