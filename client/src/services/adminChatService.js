@@ -17,3 +17,6 @@ export const sendAdminReply = (id, body) =>
 
 export const getAdminUnreadCount = () =>
   adminChatApi.get("/admin/chat/unread-count");
+
+export const updateConversationStatus = (id, status) =>
+  adminChatApi.patch(`/admin/chat/conversations/${id}/status`, { status });

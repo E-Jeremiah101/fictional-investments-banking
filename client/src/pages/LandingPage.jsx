@@ -1089,11 +1089,6 @@ export default function LandingPage() {
               © {new Date().getFullYear()} PrimeStone Capital. All rights
               reserved.
             </p>
-            <p className="max-w-xl md:text-right">
-              This is a fictional educational platform. All balances, prices and
-              investment returns shown are simulated and do not represent real
-              financial products or advice.
-            </p>
           </div>
         </div>
       </footer>

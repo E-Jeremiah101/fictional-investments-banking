@@ -188,3 +188,44 @@ export const getAdminUnreadCount = async (req, res) => {
     });
   }
 };
+
+// PATCH /api/admin/chat/conversations/:id/status
+export const updateConversationStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (!["open", "closed"].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Status must be 'open' or 'closed'.",
+      });
+    }
+
+    const conversation = await ChatConversation.findById(req.params.id);
+
+    if (!conversation) {
+      return res.status(404).json({
+        success: false,
+        message: "Conversation not found.",
+      });
+    }
+
+    conversation.status = status;
+    await conversation.save();
+
+    return res.status(200).json({
+      success: true,
+      conversation: {
+        id: conversation._id,
+        status: conversation.status,
+        lastMessageAt: conversation.lastMessageAt,
+      },
+    });
+  } catch (error) {
+    console.error("Update conversation status error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to update conversation status.",
+    });
+  }
+};
