@@ -4,14 +4,12 @@ import {
   ArrowRight,
   AlertCircle,
   ChevronDown,
-  CheckCircle
+  CheckCircle,
 } from "lucide-react";
 import {
   createATMCardRequest,
   getMyATMCardRequests,
 } from "../services/atmCardService";
-
-
 
 function VisaLogo({ className = "h-4" }) {
   return (
@@ -77,8 +75,6 @@ function AmexLogo({ className = "h-4" }) {
   );
 }
 
-
-
 const brands = [
   {
     id: "visa",
@@ -131,7 +127,6 @@ const levels = [
   },
 ];
 
-
 const faqs = [
   {
     q: "Will I receive a Virtual Card?",
@@ -147,7 +142,6 @@ const faqs = [
   },
 ];
 
-
 const formatMoney = (n, currency = "USD") =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -155,8 +149,6 @@ const formatMoney = (n, currency = "USD") =>
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(Number(n) || 0);
-
-
 
 function CardPreview({
   brand,
@@ -237,8 +229,6 @@ function CardPreview({
   );
 }
 
-
-
 function Section({ title, description, children }) {
   return (
     <section className="rounded-xl border border-gray-200 bg-white">
@@ -271,8 +261,6 @@ function Field({ id, label, hint, children }) {
     </div>
   );
 }
-
-
 
 export default function ATMCardApplication() {
   const navigate = useNavigate();
@@ -573,6 +561,11 @@ export default function ATMCardApplication() {
                         <Logo className="h-5" />
                       </div>
                     </div>
+                    {" "}
+                    <p className="mt-0.5 text-[11px] leading-4 text-gray-500">
+                       {b.tagline}
+                      {" "}
+                    </p>
                   </button>
                 );
               })}
@@ -732,9 +725,7 @@ export default function ATMCardApplication() {
                   {l.name}
                 </span>
 
-                {level === l.id && (
-                  <CheckCircle size={10}/>
-                )}
+                {level === l.id && <CheckCircle size={10} />}
               </div>
               <span className="text-[12.5px] font-bold tabular-nums text-gray-900">
                 {formatMoney(l.fee)}
