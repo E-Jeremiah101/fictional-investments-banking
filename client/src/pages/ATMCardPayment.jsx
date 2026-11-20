@@ -1,207 +1,12 @@
-// import { useState } from "react";
-// import { useNavigate, useParams } from "react-router-dom";
-// import {
-//   CreditCard,
-//   CheckCircle2,
-//   AlertCircle,
-//   LoaderCircle,
-//   ShieldCheck,
-//   Upload,
-// } from "lucide-react";
-
-// import { submitATMCardPayment } from "../services/atmCardService";
-
-// export default function ATMCardPayment() {
-//   const { id } = useParams();
-//   const navigate = useNavigate();
-
-//   const [receipt, setReceipt] = useState(null);
-//   const [submitting, setSubmitting] = useState(false);
-//   const [error, setError] = useState("");
-//   const [success, setSuccess] = useState("");
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     if (!receipt) {
-//       setError("Upload a payment receipt image or PDF.");
-//       return;
-//     }
-//     if (receipt.size > 5 * 1024 * 1024) {
-//       setError("Receipt file must be 5 MB or smaller.");
-//       return;
-//     }
-
-//     try {
-//       setSubmitting(true);
-//       setError("");
-//       setSuccess("");
-
-//       await submitATMCardPayment(id, receipt);
-
-//       setSuccess(
-//         "Your simulated card application is now waiting for administrator review.",
-//       );
-
-//       setTimeout(() => {
-//         navigate("/atm-card");
-//       }, 2000);
-//     } catch (err) {
-//       setError(
-//         err.response?.data?.message ||
-//           "Unable to submit your ATM card payment evidence.",
-//       );
-//     } finally {
-//       setSubmitting(false);
-//     }
-//   };
-
-//   const inputClass =
-//     "w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-[14px] text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#0b3b8c] focus:ring-2 focus:ring-[#0b3b8c]/15";
-
-//   return (
-//     <div className="space-y-6">
-//       {/* Page title */}
-//       <div className="flex items-start gap-3">
-//         <div>
-//           <h1 className="text-[22px] font-bold tracking-tight text-gray-900">
-//             Simulated ATM card application fee
-//           </h1>
-//           <p className="mt-1 text-[13px] text-gray-500">
-//             Upload fictional demonstration evidence to continue to administrator
-//             review. No real fee is charged and no card is issued.
-//           </p>
-//         </div>
-//       </div>
-
-//       {/* Success banner */}
-//       {success && (
-//         <div
-//           role="status"
-//           className="flex items-start gap-2.5 rounded-md border border-emerald-200 bg-emerald-50 px-3.5 py-2.5"
-//         >
-//           <CheckCircle2
-//             size={15}
-//             className="mt-0.5 shrink-0 text-emerald-600"
-//           />
-//           <p className="text-[12px] leading-5 text-emerald-900">{success}</p>
-//         </div>
-//       )}
-
-//       {/* Error banner */}
-//       {error && (
-//         <div
-//           role="alert"
-//           className="flex items-start gap-2.5 rounded-md border border-rose-200 bg-rose-50 px-3.5 py-2.5"
-//         >
-//           <AlertCircle size={15} className="mt-0.5 shrink-0 text-rose-600" />
-//           <p className="text-[12px] leading-5 text-rose-800">{error}</p>
-//         </div>
-//       )}
-
-//       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-//         {/* Form card */}
-//         <div className="rounded-md border border-gray-200 bg-white">
-//           <div className="flex items-center gap-3 border-b border-gray-200 px-6 py-4">
-//             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[#0b3b8c]/10 text-[#0b3b8c]">
-//               <CreditCard size={18} />
-//             </div>
-//             <div>
-//               <h2 className="text-[14px] font-bold text-gray-900">
-//                 Payment details
-//               </h2>
-//               <p className="mt-0.5 text-[12px] text-gray-500">
-//                 Complete the fields below to continue.
-//               </p>
-//             </div>
-//           </div>
-
-//           <div className="px-6 py-5">
-//             <form onSubmit={handleSubmit} className="space-y-6">
-//               <div>
-//                 <label
-//                   htmlFor="receipt"
-//                   className="mb-1.5 block text-[12px] font-semibold text-gray-700"
-//                 >
-//                   Payment receipt
-//                 </label>
-//                 <input
-//                   id="receipt"
-//                   type="file"
-//                   accept="image/jpeg,image/png,image/webp,application/pdf"
-//                   onChange={(e) => setReceipt(e.target.files?.[0] || null)}
-//                   className={inputClass}
-//                   required
-//                   disabled={Boolean(success)}
-//                 />
-//                 <p className="mt-1.5 text-[11px] text-gray-500">
-//                   JPG, PNG, WEBP, or PDF. Maximum file size: 5 MB.
-//                 </p>
-//                 {receipt && (
-//                   <p className="mt-2 flex items-center gap-2 text-[12px] text-gray-700">
-//                     <Upload size={14} />
-//                     {receipt.name} · {(receipt.size / 1024 / 1024).toFixed(2)} MB
-//                   </p>
-//                 )}
-//               </div>
-
-//               <div className="flex items-start gap-2.5 rounded-md bg-gray-50 px-3 py-2.5">
-//                 <ShieldCheck
-//                   size={14}
-//                   className="mt-0.5 shrink-0 text-gray-500"
-//                 />
-//                 <p className="text-[11.5px] leading-5 text-gray-600">
-//                   This is a simulation. Upload demonstration evidence only; do
-//                   not transfer real money or upload real payment receipts. No
-//                   physical ATM card will be issued.
-//                 </p>
-//               </div>
-
-//               {/* Actions */}
-//               <div className="flex flex-col-reverse items-stretch gap-2 border-t border-gray-200 pt-5 sm:flex-row sm:items-center sm:justify-end">
-//                 <button
-//                   type="button"
-//                   onClick={() => navigate(-1)}
-//                   className="rounded-md border border-gray-300 bg-white px-4 py-2.5 text-[13px] font-semibold text-gray-700 hover:bg-gray-50"
-//                 >
-//                   Cancel
-//                 </button>
-//                 <button
-//                   type="submit"
-//                   disabled={submitting || !id || Boolean(success)}
-//                   className="flex items-center justify-center gap-2 rounded-md bg-[#0b3b8c] px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#092f70] disabled:cursor-not-allowed disabled:opacity-60"
-//                 >
-//                   {submitting ? (
-//                     <>
-//                       <LoaderCircle size={14} className="animate-spin" />
-//                       Submitting…
-//                     </>
-//                   ) : (
-//                     "Submit for admin review"
-//                   )}
-//                 </button>
-//               </div>
-//             </form>
-//           </div>
-//         </div>
-
-//       </div>
-//     </div>
-//   );
-// }
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   CreditCard,
   CheckCircle2,
   AlertCircle,
-  ShieldCheck,
   UploadCloud,
   FileText,
   X,
-  Info,
-  Clock3,
-  ArrowLeft,
 } from "lucide-react";
 import { submitATMCardPayment } from "../services/atmCardService";
 
@@ -209,9 +14,6 @@ const MAX_FILE_BYTES = 5 * 1024 * 1024; // 5 MB
 const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
 const REDIRECT_MS = 4000;
 
-/* ------------------------------------------------------------------ */
-/* Receipt uploader — identical component used in Deposit.jsx         */
-/* ------------------------------------------------------------------ */
 
 function ReceiptUploader({ receipt, setReceipt, error, setError, disabled }) {
   const inputRef = useRef(null);
@@ -418,7 +220,7 @@ export default function ATMCardPayment() {
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          "Unable to submit your ATM card payment evidence.",
+          "Unable to submit your virtual card payment receipt.",
       );
     } finally {
       setSubmitting(false);

@@ -329,6 +329,7 @@ import {
   LogOut,
   ChevronRight,
   MessageCircle,
+  Landmark,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { getAdminUnreadCount } from "../services/adminChatService";
@@ -345,6 +346,7 @@ const mainNav = [
 
 const adminNav = [
   { label: "Investments", to: "/admin/investments", icon: TrendingUp },
+  { label: "Loan applications", to: "/admin/loans", icon: Landmark },
   {
     label: "Payment instructions",
     to: "/admin/payment-instructions",
@@ -432,6 +434,7 @@ export default function AdminLayout({
     if (path === "/admin/remittances") return "Remittance reviews";
     if (path === "/admin/tax-pins") return "Tax PIN generation";
     if (path === "/admin/users") return "User management";
+    if (path === "/admin/loans") return "Loan applications";
     if (path === "/admin/investments") return "Investment management";
     if (path === "/admin/payment-instructions") return "Payment instructions";
     if (path === "/admin/support") return "Support chat";

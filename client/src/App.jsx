@@ -35,6 +35,9 @@ import MyRequests from "./pages/MyRequests";
 import Investments from "./pages/Investments";
 import AdminInvestments from "./pages/AdminInvestments";
 import AdminPaymentInstructions from "./pages/AdminPaymentInstructions";
+import AdminLoans from "./pages/AdminLoans";
+import Loans from "./pages/Loans";
+import LoanApplication from "./pages/LoanApplication";
 
 function PublicRoute({ children }) {
   const { user, loading } = useAuth();
@@ -91,6 +94,7 @@ function AppRoutes() {
         <Route path="/admin/remittances" element={<AdminRemittances />} />
         <Route path="/admin/tax-pins" element={<AdminTaxPins />} />
         <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/loans" element={<AdminLoans />} />
         <Route path="/admin/investments" element={<AdminInvestments />} />
         <Route
           path="/admin/payment-instructions"
@@ -115,6 +119,8 @@ function AppRoutes() {
         <Route path="/support" element={<Support />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/investments" element={<Investments />} />
+        <Route path="/loans" element={<Loans />} />
+        <Route path="/loan-application" element={<LoanApplication />} />
         <Route path="/deposit" element={<Deposit />} />
         <Route path="/withdrawal" element={<Withdrawal />} />
         <Route path="/my-requests" element={<MyRequests />} />

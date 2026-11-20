@@ -9,6 +9,7 @@ import {
   History,
   ShieldCheck,
   ChevronRight,
+  Landmark,
 } from "lucide-react";
 
 import { useState, useEffect, useMemo } from "react";
@@ -153,6 +154,13 @@ function Dashboard() {
      cardBg: "bg-blue-50 hover:bg-blue-100 border-blue-100",
      iconColor: "bg-blue-100 text-blue-600",
      onClick: () => setActivePage("wallet"),
+   },
+   {
+     title: "Loans",
+     icon: Landmark,
+     cardBg: "bg-blue-50 hover:bg-blue-100 border-blue-100",
+     iconColor: "bg-blue-100 text-blue-600",
+     onClick: () => navigate("/loans"),
    },
  ];
   return (

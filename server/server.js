@@ -22,6 +22,8 @@ import adminUserRoutes from "./routes/adminUserRoutes.js";
 import investmentRoutes from "./routes/investmentRoutes.js";
 import paymentInstructionsRoutes from "./routes/paymentInstructionsRoutes.js";
 import adminInvestmentRoutes from "./routes/adminInvestmentRoutes.js";
+import loanRoutes from "./routes/loanRoutes.js";
+import adminLoanRoutes from "./routes/adminLoanRoutes.js";
 import path from "path";
 import { fileURLToPath } from "url";
 dotenv.config();
@@ -62,6 +64,8 @@ app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/investments", investmentRoutes);
 app.use("/api/payment-instructions", paymentInstructionsRoutes);
 app.use("/api/admin/investments", adminInvestmentRoutes);
+app.use("/api/loans", loanRoutes);
+app.use("/api/admin/loans", adminLoanRoutes);
 
 // app.get("/", (req, res) => {
 //   res.json({

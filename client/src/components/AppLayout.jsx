@@ -1,270 +1,3 @@
-// import { useState, useEffect } from "react";
-// import { NavLink, useNavigate, useLocation } from "react-router-dom";
-// import {
-//   Menu,
-//   X,
-//   LayoutDashboard,
-//   ArrowLeftRight,
-//   Wallet,
-//   TrendingUp,
-//   ArrowDownToLine,
-//   ArrowUpFromLine,
-//   History,
-//   ClipboardList,
-//   Settings,
-//   CreditCard,
-//   Bell,
-//   Search,
-//   CircleHelp,
-//   LogOut,
-//   ShieldCheck,
-//   Building2,
-//   ChevronRight,
-// } from "lucide-react";
-// import { useAuth } from "../context/AuthContext";
-
-// const navigation = [
-//   { label: "Overview", to: "/dashboard", icon: LayoutDashboard },
-//   { label: "My Wallet", to: "/dashboard?tab=wallet", icon: Wallet },
-//   { label: "Investments", to: "/investments", icon: TrendingUp },
-//   { label: "Deposit", to: "/deposit", icon: ArrowDownToLine },
-//   { label: "Withdraw", to: "/withdrawal", icon: ArrowUpFromLine },
-//   { label: "Cards", to: "/cards", icon: CreditCard },
-//   { label: "My Requests", to: "/my-requests", icon: ClipboardList },
-//   {
-//     label: "Transaction History",
-//     to: "/dashboard?tab=history",
-//     icon: History,
-//   },
-// ];
-
-// export default function AppLayout({ children }) {
-//   const navigate = useNavigate();
-//   const location = useLocation();
-//   const { user, logout } = useAuth();
-//   const isAdmin = user?.role === "admin";
-
-//   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-//   const initials =
-//     [user?.firstName, user?.lastName]
-//       .filter(Boolean)
-//       .map((n) => n[0])
-//       .join("")
-//       .toUpperCase() || "CU";
-
-//   useEffect(() => {
-//     document.body.style.overflow = sidebarOpen ? "hidden" : "";
-//     return () => {
-//       document.body.style.overflow = "";
-//     };
-//   }, [sidebarOpen]);
-
-//   const handleLogout = async () => {
-//     try {
-//       await logout();
-//       navigate("/login", { replace: true });
-//     } catch (err) {
-//       console.error("Logout failed:", err);
-//     }
-//   };
-
-//   const path = location.pathname;
-//   const tab = new URLSearchParams(location.search).get("tab") || "overview";
-
-//   const isActive = (to) => {
-//     const [targetPath, query] = to.split("?");
-//     if (query) {
-//       const targetTab = new URLSearchParams(query).get("tab");
-//       return path === targetPath && tab === targetTab;
-//     }
-//     return path === targetPath && !location.search;
-//   };
-
-//   const breadcrumbLabel = (() => {
-//     if (path === "/deposit") return "New deposit";
-//     if (path === "/investments") return "Investments";
-//     if (path === "/withdrawal") return "New withdrawal";
-//     if (path === "/my-requests") return "My requests";
-//     if (path === "/cards") return "Cards";
-//     if (path.startsWith("/cards/payment")) return "Virtual Card payment";
-//     if (path === "/remittance") return "Remittance";
-//     if (path === "/tax-pin") return "Tax pin";
-//     if (path === "/dashboard")
-//       return tab.charAt(0).toUpperCase() + tab.slice(1);
-//     return "Dashboard";
-//   })();
-
-//   return (
-//     <div className="min-h-screen bg-gray-50 text-gray-900">
-//       {/* Backdrop */}
-//       <div
-//         className={`fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
-//           sidebarOpen ? "opacity-100" : "pointer-events-none opacity-0"
-//         }`}
-//         onClick={() => setSidebarOpen(false)}
-//         aria-hidden="true"
-//       />
-
-//       {/* Persistent sidebar */}
-//       <aside
-//         className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-[#0b1a3a] text-white shadow-2xl transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-//           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-//         }`}
-//       >
-//         <div className="lg:border-none lg:py-0 flex items-center justify-end border-b border-white/10 px-6 py-2">
-//           <button
-//             onClick={() => setSidebarOpen(false)}
-//             aria-label="Close menu"
-//             className="rounded-lg p-2 text-slate-400 transition hover:bg-white/10 hover:text-white lg:hidden"
-//           >
-//             <X size={19} />
-//           </button>
-//         </div>
-
-//         <nav className="flex-1 overflow-y-auto px-3 py-4">
-
-//           <ul className="space-y-1">
-//             {navigation.map(({ label, to, icon: Icon }) => {
-//               const active = isActive(to);
-//               return (
-//                 <li key={label}>
-//                   <NavLink
-//                     to={to}
-//                     onClick={() => setSidebarOpen(false)}
-//                     className={`group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition ${
-//                       active
-//                         ? "bg-blue-600 text-white shadow-lg shadow-blue-600/25"
-//                         : "text-slate-300 hover:bg-white/5 hover:text-white"
-//                     }`}
-//                   >
-//                     <Icon
-//                       size={18}
-//                       className={
-//                         active ? "" : "text-slate-400 group-hover:text-white"
-//                       }
-//                     />
-//                     <span className="flex-1">{label}</span>
-//                     {active && (
-//                       <ChevronRight size={15} className="text-white/80" />
-//                     )}
-//                   </NavLink>
-//                 </li>
-//               );
-//             })}
-//           </ul>
-
-//           {isAdmin && (
-//             <>
-//               <p className="mb-2 mt-6 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-//                 Administration
-//               </p>
-//               <NavLink
-//                 to="/admin"
-//                 onClick={() => setSidebarOpen(false)}
-//                 className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-300 transition hover:bg-white/5 hover:text-white"
-//               >
-//                 <ShieldCheck
-//                   size={18}
-//                   className="text-slate-400 group-hover:text-white"
-//                 />
-//                 Admin Dashboard
-//               </NavLink>
-//             </>
-//           )}
-//         </nav>
-
-//         <div className="border-t border-white/10 px-3 py-4">
-//           <NavLink
-//             to="/dashboard?tab=settings"
-//             onClick={() => setSidebarOpen(false)}
-//             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/5 hover:text-white"
-//           >
-//             <Settings size={18} className="text-slate-400" />
-//             Settings
-//           </NavLink>
-//           <NavLink
-//             to="/dashboard?tab=help"
-//             onClick={() => setSidebarOpen(false)}
-//             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/5 hover:text-white"
-//           >
-//             <CircleHelp size={18} className="text-slate-400" />
-//             Help & support
-//           </NavLink>
-//           <button
-//             onClick={handleLogout}
-//             className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-rose-300 transition hover:bg-rose-500/10 hover:text-rose-200"
-//           >
-//             <LogOut size={18} />
-//             Sign out
-//           </button>
-//         </div>
-//       </aside>
-
-//       {/* Main */}
-//       <div className="lg:pl-72">
-//         <header className="sticky top-0 z-30 border-b border-gray-200 bg-white">
-//           <div className="flex h-16 items-center justify-between gap-4 px-4 md:px-8">
-//             <div className="flex items-center gap-3">
-//               <button
-//                 onClick={() => setSidebarOpen(true)}
-//                 aria-label="Open menu"
-//                 className="rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-50 lg:hidden"
-//               >
-//                 <Menu size={18} />
-//               </button>
-//               <nav className="flex items-center gap-1.5 text-[12px] text-gray-500">
-//                 <ChevronRight
-//                   size={12}
-//                   className="hidden sm:block text-gray-300"
-//                 />
-//                 <span className="font-semibold text-gray-900">
-//                   {breadcrumbLabel}
-//                 </span>
-//               </nav>
-//             </div>
-
-//             <div className="flex items-center gap-1">
-//               <div className="relative hidden md:block">
-//                 <Search
-//                   size={15}
-//                   className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-//                 />
-//                 <input
-//                   type="search"
-//                   placeholder="Search"
-//                   className="w-56 rounded-md border border-gray-300 bg-white py-1.5 pl-9 pr-3 text-[13px] outline-none focus:border-[#0b3b8c] focus:ring-2 focus:ring-[#0b3b8c]/15"
-//                 />
-//               </div>
-
-//               <button
-//                 aria-label="Notifications"
-//                 className="relative rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-50"
-//               >
-//                 <Bell size={17} />
-//               </button>
-
-//               <div className="mx-1 h-6 w-px bg-gray-200" />
-
-//               <div className="flex items-center gap-2.5 pl-1">
-//                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0b3b8c] text-[11px] font-bold text-white">
-//                   {initials}
-//                 </div>
-//                 <div className="hidden sm:block">
-
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </header>
-
-//         <main className="px-4 py-8 md:px-8">
-//           <div className="mx-auto max-w-6xl">{children}</div>
-//         </main>
-//       </div>
-//     </div>
-//   );
-// }
 
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
@@ -286,6 +19,7 @@ import {
   LogOut,
   ShieldCheck,
   ChevronRight,
+  Landmark,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import SupportChatWidget from "./SupportChatWidget";
@@ -294,6 +28,7 @@ const navigation = [
   { label: "Overview", to: "/dashboard", icon: LayoutDashboard },
   { label: "Wallet", to: "/dashboard?tab=wallet", icon: Wallet },
   { label: "Investments", to: "/investments", icon: TrendingUp },
+  { label: "Loans", to: "/loans", icon: Landmark },
   { label: "Deposit", to: "/deposit", icon: ArrowDownToLine },
   { label: "Withdraw", to: "/withdrawal", icon: ArrowUpFromLine },
   { label: "Cards", to: "/cards", icon: CreditCard },
@@ -358,12 +93,17 @@ export default function AppLayout({ children }) {
       const targetTab = new URLSearchParams(query).get("tab");
       return path === targetPath && tab === targetTab;
     }
+    if (targetPath === "/loans") {
+      return path === "/loans" || path === "/loan-application";
+    }
     return path === targetPath && !location.search;
   };
 
   const breadcrumbLabel = (() => {
     if (path === "/deposit") return "New deposit";
     if (path === "/investments") return "Investments";
+    if (path === "/loans") return "Loan services";
+    if (path === "/loan-application") return "Loan application";
     if (path === "/withdrawal") return "New withdrawal";
     if (path === "/my-requests") return "My requests";
     if (path === "/cards") return "Cards";
