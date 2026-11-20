@@ -50,7 +50,7 @@ export const createDepositRequest = async (req, res) => {
     if (purpose === "trading_activation" && numericAmount !== 300) {
       return res.status(400).json({
         success: false,
-        message: "Trading activation requires a simulated deposit of exactly $300.",
+        message: "Trading activation requires a deposit of exactly $300.",
       });
     }
 
@@ -79,7 +79,7 @@ export const createDepositRequest = async (req, res) => {
     if (!account) {
       return res.status(404).json({
         success: false,
-        message: "Your active simulation account could not be found.",
+        message: "Your active account could not be found.",
       });
     }
 
@@ -89,7 +89,7 @@ export const createDepositRequest = async (req, res) => {
     ) {
       return res.status(400).json({
         success: false,
-        message: "Start trading activation before submitting its deposit.",
+        message: "Start trading activation before submitting deposit.",
       });
     }
 

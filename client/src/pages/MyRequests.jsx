@@ -1,3 +1,318 @@
+// import { useCallback, useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import {
+//   Clock3,
+//   CheckCircle2,
+//   XCircle,
+//   ArrowRight,
+//   FileText,
+//   Building2,
+//   Wallet,
+//   ArrowUpFromLine,
+//   Loader2,
+//   RefreshCw,
+// } from "lucide-react";
+
+// import { getMyWithdrawalRequests } from "../services/withdrawalService";
+
+// const formatMoney = (amount) =>
+//   new Intl.NumberFormat("en-US", {
+//     style: "currency",
+//     currency: "USD",
+//     minimumFractionDigits: 2,
+//     maximumFractionDigits: 2,
+//   }).format(Number(amount) || 0);
+
+// const formatDate = (date) => {
+//   if (!date) return "—";
+//   return new Date(date).toLocaleString("en-US", {
+//     dateStyle: "medium",
+//     timeStyle: "short",
+//   });
+// };
+
+// const statusDetails = {
+//   pending: {
+//     label: "Pending",
+//     description: "Your withdrawal is processing.",
+//     band: "bg-[#0b3b8c] text-white",
+//     icon: Clock3,
+//   },
+//   awaiting_atm: {
+//     label: "Virtual Card application",
+//     description:
+//       "Submit payment receipt for your Virtual Card application.",
+//     band: "bg-[#0b3b8c] text-white",
+//     icon: Clock3,
+//   },
+//   awaiting_atm_approval: {
+//     label: "Virtual Card review",
+//     description:
+//       "Management is reviewing your Card application.",
+//     band: "bg-[#0b3b8c] text-white",
+//     icon: Clock3,
+//   },
+//   ready_for_withdrawal: {
+//     label: "Virtual Card processed",
+//     description: "Your Virtual Card has been approved.",
+//     band: "bg-[#0b3b8c] text-white",
+//     icon: CheckCircle2,
+//   },
+//   awaiting_tax_pin: {
+//     label: "Tax PIN required",
+//     description:
+//       "Your Tax PIN is ready. Enter the six-digit PIN provided by management to continue.",
+//     band: "bg-[#0b3b8c] text-white",
+//     icon: FileText,
+//   },
+//   tax_pin_verified: {
+//     label: "Tax PIN verified",
+//     description: "Continue with withdrawal.",
+//     band: "bg-[#0b3b8c] text-white",
+//     icon: CheckCircle2,
+//   },
+//   awaiting_remittance_payment: {
+//     label: "Remittance step",
+//     description:
+//       "Review the remittance details and submit the requested payment receipt.",
+//     band: "bg-[#0b3b8c] text-white",
+//     icon: FileText,
+//   },
+//   awaiting_remittance_approval: {
+//     label: "Awaiting remittance review",
+//     description: "Your receipt is awaiting review.",
+//     band: "bg-[#0b3b8c] text-white",
+//     icon: Clock3,
+//   },
+//   approved: {
+//     label: "Successful",
+//     description: "This withdrawal has been completed.",
+//     band: "bg-[#0b3b8c] text-white",
+//     icon: CheckCircle2,
+//   },
+//   rejected: {
+//     label: "Cancelled",
+//     description: "This withdrawal request was cancelled.",
+//     band: "bg-[#0b3b8c] text-white",
+//     icon: XCircle,
+//   },
+// };
+
+// function getNextStep(withdrawal) {
+//   const status = withdrawal.status;
+
+//   if (status === "pending") {
+//     return {
+//       label: "Apply for Virtual Card",
+//       path: `/cards?withdrawalId=${encodeURIComponent(withdrawal.id)}`,
+//     };
+//   }
+
+//   if (
+//     status === "awaiting_atm" &&
+//     withdrawal.atmCardRequest?.status === "awaiting_payment" &&
+//     withdrawal.atmCardRequest?.paymentStatus === "not_submitted"
+//   ) {
+//     const requestId =
+//       withdrawal.atmCardRequest.id || withdrawal.atmCardRequest._id;
+
+//     if (requestId) {
+//       return {
+//         label: "Submit Virtual Card payment receipt",
+//         path: `/cards/payment/${encodeURIComponent(requestId)}${
+//           withdrawal.id
+//             ? `?withdrawalId=${encodeURIComponent(withdrawal.id)}`
+//             : ""
+//         }`,
+//       };
+//     }
+//   }
+
+//   if (status === "ready_for_withdrawal") {
+//     return {
+//       label: "Proceed with withdrawal",
+//       path: `/tax-pin?withdrawalId=${encodeURIComponent(withdrawal.id)}`,
+//     };
+//   }
+
+//   if (status === "awaiting_tax_pin") {
+//     return {
+//       label: "Proceed to Tax PIN",
+//       path: `/tax-pin?withdrawalId=${encodeURIComponent(withdrawal.id)}`,
+//     };
+//   }
+
+//   if (["tax_pin_verified", "awaiting_remittance_payment"].includes(status)) {
+//     return {
+//       label: "Proceed to remittance",
+//       path: `/remittance?withdrawalId=${encodeURIComponent(withdrawal.id)}`,
+//     };
+//   }
+
+//   return null;
+// }
+
+// export default function MyRequests() {
+//   const navigate = useNavigate();
+
+//   const [withdrawals, setWithdrawals] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState("");
+
+//   const loadRequests = useCallback(async () => {
+//     setLoading(true);
+//     setError("");
+//     try {
+//       const response = await getMyWithdrawalRequests();
+//       setWithdrawals(response.withdrawals || []);
+//     } catch (err) {
+//       setError(
+//         err.response?.data?.message ||
+//           "Unable to load your withdrawal requests.",
+//       );
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     loadRequests();
+//   }, [loadRequests]);
+
+//   if (loading) {
+//     return (
+//       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
+//         <Loader2 size={36} className="animate-spin text-[#0b3b8c]" />
+
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="mx-auto max-w-3xl space-y-6">
+
+//       {/* Error */}
+//       {error && (
+//         <div
+//           role="alert"
+//           className="flex items-start gap-2.5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3"
+//         >
+//           <XCircle size={16} className="mt-0.5 shrink-0 text-rose-600" />
+//           <p className="text-sm leading-5 text-rose-800">{error}</p>
+//         </div>
+//       )}
+
+//       {/* Empty state */}
+//       {withdrawals.length === 0 ? (
+//         <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+//           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+//             <FileText size={24} />
+//           </div>
+//           <p className="mt-4 text-base font-bold text-slate-900">
+//             No withdrawal requests yet
+//           </p>
+//           <p className="mx-auto mt-1 max-w-sm text-sm text-slate-500">
+//             Your submitted withdrawal requests will appear here.
+//           </p>
+//           <button
+//             type="button"
+//             onClick={() => navigate("/withdrawal")}
+//             className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#0b3b8c] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0a3478]"
+//           >
+//             <ArrowUpFromLine size={16} />
+//             Proceed to Withdrawal
+//           </button>
+//         </div>
+//       ) : (
+//         <div className="space-y-4">
+//           {withdrawals.map((withdrawal) => {
+//             const details =
+//               withdrawal.status === "awaiting_atm" &&
+//               withdrawal.atmCardRequest?.paymentStatus === "awaiting_review"
+//                 ? statusDetails.awaiting_atm_approval
+//                 : statusDetails[withdrawal.status] || {
+//                     label: withdrawal.status || "Processing",
+//                     description: "Check back for the next update.",
+//                     band: "bg-slate-500 text-white",
+//                     icon: Clock3,
+//                   };
+
+//             const StatusIcon = details.icon;
+//             const nextStep = getNextStep(withdrawal);
+//             const isBank = withdrawal.method === "bank_transfer";
+
+//             return (
+//               <article
+//                 key={withdrawal.id}
+//                 className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-slate-300"
+//               >
+//                 {/* Status band — colored banner */}
+//                 <div
+//                   className={`flex items-center justify-between gap-3 px-5 py-2.5 ${details.band}`}
+//                 >
+//                   <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide">
+//                     <StatusIcon size={14} />
+//                     {details.label}
+//                   </span>
+//                   <span className="text-[11px] font-semibold tabular-nums opacity-90">
+//                     {formatDate(withdrawal.createdAt)}
+//                   </span>
+//                 </div>
+
+//                 {/* Body */}
+//                 <div className="px-5 py-5">
+//                   {/* Amount + method */}
+//                   <div className="flex items-baseline justify-between gap-3">
+//                     <p className="text-2xl font-bold tracking-tight tabular-nums text-slate-900">
+//                       {formatMoney(withdrawal.amount)}
+//                     </p>
+//                     <p className="flex items-center gap-1.5 text-xs text-slate-500">
+//                       {isBank ? (
+//                         <>
+//                           <Building2 size={12} className="text-slate-400" />
+//                           Bank transfer
+//                         </>
+//                       ) : (
+//                         <>
+//                           <Wallet size={12} className="text-slate-400" />
+//                           Cryptocurrency
+//                         </>
+//                       )}
+//                     </p>
+//                   </div>
+
+//                   {/* Description — the main message */}
+
+//                   <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-700">
+//                     <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+//                       {details.description}
+//                     </p>
+
+//                   </div>
+
+//                 </div>
+
+//                 {/* Next step — full-width action bar */}
+//                 {nextStep && (
+//                   <div className="border-t border-slate-100 bg-slate-50 px-5 py-3">
+//                     <button
+//                       type="button"
+//                       onClick={() => navigate(nextStep.path)}
+//                       className="flex w-full items-center justify-between gap-3 rounded-lg bg-[#0b3b8c] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#0a3478]"
+//                     >
+//                       <span>{nextStep.label}</span>
+//                       <ArrowRight size={16} />
+//                     </button>
+//                   </div>
+//                 )}
+//               </article>
+//             );
+//           })}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -6,10 +321,11 @@ import {
   XCircle,
   ArrowRight,
   FileText,
-  Info,
   Building2,
   Wallet,
   ArrowUpFromLine,
+  Loader2,
+  RefreshCw,
 } from "lucide-react";
 
 import { getMyWithdrawalRequests } from "../services/withdrawalService";
@@ -33,68 +349,64 @@ const formatDate = (date) => {
 const statusDetails = {
   pending: {
     label: "Pending",
-    description: "Your withdrawal request is being prepared for the next step.",
-    badge: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
+    description: "Your withdrawal is processing.",
+    band: "bg-[#0b3b8c] text-white",
     icon: Clock3,
   },
   awaiting_atm: {
     label: "Virtual Card application",
-    description:
-      "Submit demonstration evidence for your Virtual Card application.",
-    badge: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
+    description: "Submit payment receipt for your Virtual Card application.",
+    band: "bg-[#0b3b8c] text-white",
     icon: Clock3,
   },
   awaiting_atm_approval: {
     label: "Virtual Card review",
-    description:
-      "Management is reviewing your Virtual Card application and demonstration receipt.",
-    badge: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
+    description: "Management is reviewing your Card application.",
+    band: "bg-[#0b3b8c] text-white",
     icon: Clock3,
   },
   ready_for_withdrawal: {
     label: "Virtual Card processed",
-    description:
-      "Your Virtual Card has been approved.",
-    badge: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
+    description: "Your Virtual Card has been approved.",
+    band: "bg-[#0b3b8c] text-white",
     icon: CheckCircle2,
   },
   awaiting_tax_pin: {
     label: "Tax PIN required",
     description:
       "Your Tax PIN is ready. Enter the six-digit PIN provided by management to continue.",
-    badge: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
+    band: "bg-[#0b3b8c] text-white",
     icon: FileText,
   },
   tax_pin_verified: {
     label: "Tax PIN verified",
-    description: "Continue to the remittance stage.",
-    badge: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
+    description: "Continue with withdrawal.",
+    band: "bg-[#0b3b8c] text-white",
     icon: CheckCircle2,
   },
   awaiting_remittance_payment: {
     label: "Remittance step",
     description:
-      "Review the remittance details and submit the requested demonstration evidence to continue.",
-    badge: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
+      "Review the remittance details and submit the requested payment receipt.",
+    band: "bg-[#0b3b8c] text-white",
     icon: FileText,
   },
   awaiting_remittance_approval: {
     label: "Awaiting remittance review",
-    description:
-      "Your demonstration receipt is awaiting administrator review.",
-    badge: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
+    description: "Your receipt is awaiting review.",
+    band: "bg-[#0b3b8c] text-white",
     icon: Clock3,
   },
   approved: {
-    label: "Completed",
+    label: "Successful",
     description: "This withdrawal has been completed.",
-    badge: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
+    band: "bg-[#0b3b8c] text-white",
     icon: CheckCircle2,
   },
   rejected: {
     label: "Cancelled",
     description: "This withdrawal request was cancelled.",
-    badge: "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
+    band: "bg-[#0b3b8c] text-white",
     icon: XCircle,
   },
 };
@@ -119,7 +431,7 @@ function getNextStep(withdrawal) {
 
     if (requestId) {
       return {
-        label: "Submit Virtual Card payment evidence",
+        label: "Submit Virtual Card payment receipt",
         path: `/cards/payment/${encodeURIComponent(requestId)}${
           withdrawal.id
             ? `?withdrawalId=${encodeURIComponent(withdrawal.id)}`
@@ -138,14 +450,14 @@ function getNextStep(withdrawal) {
 
   if (status === "awaiting_tax_pin") {
     return {
-      label: "Continue to Tax PIN",
+      label: "Proceed to Tax PIN",
       path: `/tax-pin?withdrawalId=${encodeURIComponent(withdrawal.id)}`,
     };
   }
 
   if (["tax_pin_verified", "awaiting_remittance_payment"].includes(status)) {
     return {
-      label: "Continue to remittance",
+      label: "Proceed to remittance",
       path: `/remittance?withdrawalId=${encodeURIComponent(withdrawal.id)}`,
     };
   }
@@ -165,7 +477,9 @@ export default function MyRequests() {
     setError("");
     try {
       const response = await getMyWithdrawalRequests();
-      setWithdrawals(response.withdrawals || []);
+      const all = response.withdrawals || [];
+      // Successful withdrawals are hidden from this page.
+      setWithdrawals(all.filter((w) => w.status !== "approved"));
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -180,149 +494,130 @@ export default function MyRequests() {
     loadRequests();
   }, [loadRequests]);
 
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
+        <Loader2 size={36} className="animate-spin text-[#0b3b8c]" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6">
+      {/* Error */}
       {error && (
         <div
           role="alert"
-          className="flex items-start gap-2.5 rounded-md border border-rose-200 bg-rose-50 px-3.5 py-2.5"
+          className="flex items-start gap-2.5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3"
         >
-          <XCircle size={15} className="mt-0.5 shrink-0 text-rose-600" />
-          <p className="text-[12px] leading-5 text-rose-800">{error}</p>
+          <XCircle size={16} className="mt-0.5 shrink-0 text-rose-600" />
+          <p className="text-sm leading-5 text-rose-800">{error}</p>
         </div>
       )}
 
-      {loading ? null : withdrawals.length === 0 ? (
-        <div className="rounded-md border border-gray-200 bg-white px-6 py-14 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
-            <FileText size={22} />
+      {/* Empty state */}
+      {withdrawals.length === 0 ? (
+        <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+            <FileText size={24} />
           </div>
-          <p className="mt-3 text-[13px] font-semibold text-gray-900">
+          <p className="mt-4 text-base font-bold text-slate-900">
             No withdrawal requests yet
           </p>
-          <p className="mt-1 text-[12px] text-gray-500">
+          <p className="mx-auto mt-1 max-w-sm text-sm text-slate-500">
             Your submitted withdrawal requests will appear here.
           </p>
           <button
             type="button"
             onClick={() => navigate("/withdrawal")}
-            className="mt-5 rounded-md bg-[#0b3b8c] px-4 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#092f70]"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#0b3b8c] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0a3478]"
           >
-            Create a withdrawal request
+            <ArrowUpFromLine size={16} />
+            Proceed to Withdrawal
           </button>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-md border border-gray-200 bg-white">
-          <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-            <div>
-              <h2 className="text-[14px] font-bold text-gray-900">
-                Request history
-              </h2>
-            </div>
-          </div>
+        <div className="space-y-4">
+          {withdrawals.map((withdrawal) => {
+            const details =
+              withdrawal.status === "awaiting_atm" &&
+              withdrawal.atmCardRequest?.paymentStatus === "awaiting_review"
+                ? statusDetails.awaiting_atm_approval
+                : statusDetails[withdrawal.status] || {
+                    label: withdrawal.status || "Processing",
+                    description: "Check back for the next update.",
+                    band: "bg-slate-500 text-white",
+                    icon: Clock3,
+                  };
 
-          <ul className="divide-y divide-gray-100">
-            {withdrawals.map((withdrawal) => {
-              const details =
-                withdrawal.status === "awaiting_atm" &&
-                withdrawal.atmCardRequest?.paymentStatus === "awaiting_review"
-                  ? statusDetails.awaiting_atm_approval
-                  : statusDetails[withdrawal.status] || {
-                      label: withdrawal.status || "Processing",
-                      description: "Check back for the next update.",
-                      badge: "bg-gray-100 text-gray-700 ring-1 ring-gray-200",
-                      icon: Clock3,
-                    };
+            const StatusIcon = details.icon;
+            const nextStep = getNextStep(withdrawal);
+            const isBank = withdrawal.method === "bank_transfer";
 
-              const StatusIcon = details.icon;
-              const nextStep = getNextStep(withdrawal);
-              const isBank = withdrawal.method === "bank_transfer";
-              const isRejected = withdrawal.status === "rejected";
-              const isCompleted = withdrawal.status === "approved";
+            return (
+              <article
+                key={withdrawal.id}
+                className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-slate-300"
+              >
+                {/* Status band — colored banner */}
+                <div
+                  className={`flex items-center justify-between gap-3 px-5 py-2.5 ${details.band}`}
+                >
+                  <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide">
+                    <StatusIcon size={14} />
+                    {details.label}
+                  </span>
+                  <span className="text-[11px] font-semibold tabular-nums opacity-90">
+                    {formatDate(withdrawal.createdAt)}
+                  </span>
+                </div>
 
-              return (
-                <li key={withdrawal.id} className="p-5 sm:p-6">
-                  {/* Top row: amount + method + badge */}
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="flex items-start gap-3">
-                      <div
-                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${
-                          isRejected
-                            ? "bg-rose-50 text-rose-600"
-                            : isCompleted
-                              ? "bg-emerald-50 text-emerald-600"
-                              : "bg-blue-50 text-[#0b3b8c]"
-                        }`}
-                      >
-                        <ArrowUpFromLine size={18} />
-                      </div>
-
-                      <div>
-                        <p className="text-[15px] font-bold tabular-nums text-gray-900">
-                          {formatMoney(withdrawal.amount)}
-                        </p>
-                        <p className="mt-0.5 flex items-center gap-1.5 text-[11.5px] text-gray-500">
-                          {isBank ? (
-                            <>
-                              <Building2 size={12} className="text-gray-400" />
-                              Bank transfer
-                            </>
-                          ) : (
-                            <>
-                              <Wallet size={12} className="text-gray-400" />
-                              Cryptocurrency
-                            </>
-                          )}
-                        </p>
-                      </div>
-                    </div>
-
-                    <span
-                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${details.badge}`}
-                    >
-                      <StatusIcon size={11} />
-                      {details.label}
-                    </span>
+                {/* Body */}
+                <div className="px-5 py-5">
+                  {/* Amount + method */}
+                  <div className="flex items-baseline justify-between gap-3">
+                    <p className="text-2xl font-bold tracking-tight tabular-nums text-slate-900">
+                      {formatMoney(withdrawal.amount)}
+                    </p>
+                    <p className="flex items-center gap-1.5 text-xs text-slate-500">
+                      {isBank ? (
+                        <>
+                          <Building2 size={12} className="text-slate-400" />
+                          Bank transfer
+                        </>
+                      ) : (
+                        <>
+                          <Wallet size={12} className="text-slate-400" />
+                          Cryptocurrency
+                        </>
+                      )}
+                    </p>
                   </div>
 
-                  {/* Description + submitted */}
-                  <div className="mt-3 pl-13">
-                    <p className="text-[14.5px] leading-5 text-gray-700">
+                  {/* Description — the main message */}
+                  <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-700">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                       {details.description}
                     </p>
-                    <p className="mt-1.5 flex items-center gap-1.5 text-[11px] text-gray-400">
-                      <Clock3 size={11} />
-                      Submitted {formatDate(withdrawal.createdAt)}
-                    </p>
                   </div>
+                </div>
 
-                  {/* Review note */}
-                  {withdrawal.reviewNote && (
-                    <div className="mt-3 ml-13 rounded-md bg-gray-50 px-3 py-2 text-[12px] text-gray-600">
-                      <span className="font-semibold text-gray-700">
-                        Administrator note:{" "}
-                      </span>
-                      {withdrawal.reviewNote}
-                    </div>
-                  )}
-
-                  {/* Action */}
-                  {nextStep && (
-                    <div className="mt-4 ml-13">
-                      <button
-                        type="button"
-                        onClick={() => navigate(nextStep.path)}
-                        className="inline-flex items-center gap-1.5 rounded-md bg-[#0b3b8c] px-3.5 py-2 text-[12.5px] font-semibold text-white transition hover:bg-[#092f70]"
-                      >
-                        {nextStep.label}
-                        <ArrowRight size={13} />
-                      </button>
-                    </div>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+                {/* Next step — full-width action bar */}
+                {nextStep && (
+                  <div className="border-t border-slate-100 bg-slate-50 px-5 py-3">
+                    <button
+                      type="button"
+                      onClick={() => navigate(nextStep.path)}
+                      className="flex w-full items-center justify-between gap-3 rounded-lg bg-[#0b3b8c] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#0a3478]"
+                    >
+                      <span>{nextStep.label}</span>
+                      <ArrowRight size={16} />
+                    </button>
+                  </div>
+                )}
+              </article>
+            );
+          })}
         </div>
       )}
     </div>

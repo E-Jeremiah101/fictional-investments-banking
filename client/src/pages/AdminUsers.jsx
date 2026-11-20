@@ -19,6 +19,7 @@ import {
   getAdminUserDetails,
   getAdminUsers,
 } from "../services/adminUserService";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const formatMoney = (amount) =>
   new Intl.NumberFormat("en-US", {
@@ -72,6 +73,7 @@ export default function AdminUsers() {
   const [reason, setReason] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [pendingDeactivation, setPendingDeactivation] = useState(null);
 
   const loadUsers = useCallback(async (requestedPage = 1) => {
     setLoading(true);
@@ -166,20 +168,20 @@ export default function AdminUsers() {
     }
   };
 
-  const handleDeactivate = async () => {
+  const handleDeactivate = () => {
     if (!selectedUser?.id || selectedUser.accountStatus !== "active") return;
 
-    const confirmed = window.confirm(
-      `Deactivate access for ${selectedUser.firstName} ${selectedUser.lastName}? Their account and transaction history will be retained.`,
-    );
-    if (!confirmed) return;
+    setPendingDeactivation(selectedUser);
+  };
 
+  const confirmDeactivation = async () => {
+    if (!pendingDeactivation?.id) return;
     setSubmitting(true);
     setError("");
     setNotice("");
 
     try {
-      const response = await deactivateAdminUser(selectedUser.id);
+      const response = await deactivateAdminUser(pendingDeactivation.id);
       setNotice(response.message);
       await refreshSelectedUser();
     } catch (err) {
@@ -188,6 +190,7 @@ export default function AdminUsers() {
       );
     } finally {
       setSubmitting(false);
+      setPendingDeactivation(null);
     }
   };
 
@@ -605,6 +608,18 @@ export default function AdminUsers() {
           </div>
         </section>
       </main>
+      {pendingDeactivation && (
+        <ConfirmDialog
+          title="Deactivate customer access?"
+          message={`Deactivate access for ${pendingDeactivation.firstName} ${pendingDeactivation.lastName}? Their account and transaction history will be retained.`}
+          confirmLabel="Deactivate access"
+          busy={submitting}
+          busyLabel="Deactivating…"
+          variant="danger"
+          onCancel={() => setPendingDeactivation(null)}
+          onConfirm={confirmDeactivation}
+        />
+      )}
     </div>
   );
 }

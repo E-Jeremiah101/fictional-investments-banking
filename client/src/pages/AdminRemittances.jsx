@@ -16,6 +16,7 @@ import {
   getPendingRemittanceRequests,
   reviewRemittanceRequest,
 } from "../services/adminRemittanceService";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const formatUSD = (cents) =>
   new Intl.NumberFormat("en-US", {
@@ -40,6 +41,7 @@ export default function AdminRemittances() {
   const [reviewingId, setReviewingId] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [pendingReview, setPendingReview] = useState(null);
 
   const fetchRequests = async () => {
     try {
@@ -62,7 +64,7 @@ export default function AdminRemittances() {
     fetchRequests();
   }, []);
 
-  const handleReview = async (requestId, decision) => {
+  const handleReview = (requestId, decision) => {
     setError("");
     setSuccess("");
 
@@ -72,12 +74,12 @@ export default function AdminRemittances() {
       return;
     }
 
-    const confirmation =
-      decision === "approve"
-        ? "Approve this simulation request and complete the simulated withdrawal?"
-        : "Reject this simulation request?";
-    if (!window.confirm(confirmation)) return;
+    setPendingReview({ requestId, decision, reviewNote });
+  };
 
+  const confirmReview = async () => {
+    if (!pendingReview) return;
+    const { requestId, decision, reviewNote } = pendingReview;
     try {
       setReviewingId(requestId);
 
@@ -101,6 +103,7 @@ export default function AdminRemittances() {
       );
     } finally {
       setReviewingId("");
+      setPendingReview(null);
     }
   };
 
@@ -303,6 +306,30 @@ export default function AdminRemittances() {
         PrimeStone Capital administrator console · Educational simulation only. No real
         funds are held or transferred.
       </p>
+      {pendingReview && (
+        <ConfirmDialog
+          title={
+            pendingReview.decision === "approve"
+              ? "Approve simulation request?"
+              : "Reject simulation request?"
+          }
+          message={
+            pendingReview.decision === "approve"
+              ? "Approving this request will complete the simulated withdrawal. Continue?"
+              : "Are you sure you want to reject this simulation request?"
+          }
+          confirmLabel={
+            pendingReview.decision === "approve"
+              ? "Approve request"
+              : "Reject request"
+          }
+          busy={reviewingId === pendingReview.requestId}
+          busyLabel="Processing…"
+          variant={pendingReview.decision === "approve" ? "primary" : "danger"}
+          onCancel={() => setPendingReview(null)}
+          onConfirm={confirmReview}
+        />
+      )}
     </div>
   );
 }

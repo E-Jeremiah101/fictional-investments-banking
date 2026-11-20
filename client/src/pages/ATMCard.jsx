@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
-  ShieldCheck,
   ArrowRight,
   AlertCircle,
   ChevronDown,
-  Sparkles,
-  Zap,
 } from "lucide-react";
 import {
   createATMCardRequest,
@@ -79,9 +76,7 @@ function AmexLogo({ className = "h-4" }) {
   );
 }
 
-/* ============================================================
-   Config
-   ============================================================ */
+
 
 const brands = [
   {
@@ -147,7 +142,7 @@ const faqs = [
   },
   {
     q: "What are the differences between card levels?",
-    a: "Each card level offers different demonstration fees and daily transaction limits, allowing you to explore the available account options.",
+    a: "Each card level offers different  fees and daily transaction limits, allowing you to explore the available account options.",
   },
 ];
 
@@ -403,7 +398,7 @@ export default function ATMCardApplication() {
       setError(
         err.response?.data?.message ||
           err.message ||
-          "Unable to submit your simulated Virtual Card application.",
+          "Unable to submit your Virtual Card application.",
       );
     } finally {
       setSubmitting(false);
@@ -540,9 +535,12 @@ export default function ATMCardApplication() {
       {/* Preview + configuration */}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
         {/* Right: form */}
+
+        
         <div className="space-y-6">
           {/* Brand picker */}
-          <Section title="Choose Details" description="Card Types">
+          <Section title="Apply for new card" description="Card Types">
+            
             <div className="grid gap-3 sm:grid-cols-3">
               {brands.map((b) => {
                 const isSelected = brand === b.id;
@@ -554,7 +552,7 @@ export default function ATMCardApplication() {
                     onClick={() => setBrand(b.id)}
                     className={`relative flex flex-col rounded-lg border bg-white p-4 text-left transition ${
                       isSelected
-                        ? "border-[#0b3b8c] ring-1 ring-[#0b3b8c]"
+                        ? "border-[#8c0b0f] ring-1 ring-[#0b3b8c]"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
@@ -576,10 +574,6 @@ export default function ATMCardApplication() {
                         <Logo className="h-5" />
                       </div>
                     </div>
-
-                    <p className="mt-0.5 text-[11px] leading-4 text-gray-500">
-                      {b.tagline}
-                    </p>
                   </button>
                 );
               })}

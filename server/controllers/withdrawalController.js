@@ -310,7 +310,7 @@ export const createWithdrawalRequest = async (req, res) => {
         }).session(session);
 
         if (!currentAccount) {
-          throw new Error("Your active simulation account could not be found.");
+          throw new Error("Your account could not be found.");
         }
 
         if (amountCents > currentAccount.balanceCents) {
@@ -359,7 +359,7 @@ export const createWithdrawalRequest = async (req, res) => {
               account: currentAccount._id,
               user: req.user._id,
               type: "withdrawal",
-              description: "Pending simulated withdrawal request",
+              description: "Pending withdrawal request",
               amountCents,
               currency: "USD",
               status: "pending",
@@ -384,7 +384,7 @@ export const createWithdrawalRequest = async (req, res) => {
       return res.status(201).json({
         success: true,
         message:
-          "Your simulated withdrawal request has been submitted and is awaiting review.",
+          "Your withdrawal request has been submitted and is awaiting review.",
         withdrawal: {
           id: createdWithdrawal._id,
           amount: createdWithdrawal.amountCents / 100,
@@ -544,7 +544,7 @@ export const reviewWithdrawalRequest = async (req, res) => {
 
       if (!account) {
         throw new Error(
-          "The customer's simulation account is unavailable or inactive.",
+          "The customer's account is unavailable or inactive.",
         );
       }
 
@@ -558,7 +558,7 @@ export const reviewWithdrawalRequest = async (req, res) => {
       }).session(session);
 
       if (!atmRequest) {
-        throw new Error("The ATM card request has not been approved.");
+        throw new Error("The virtual card request has not been approved.");
       }
 
       const taxPin = await TaxPin.findOne({
@@ -599,7 +599,7 @@ export const reviewWithdrawalRequest = async (req, res) => {
 
       if (action === "approve") {
         if (account.balanceCents < withdrawal.amountCents) {
-          throw new Error("Insufficient simulation account balance.");
+          throw new Error("Insufficient  account balance.");
         }
 
         account.balanceCents -= withdrawal.amountCents;
@@ -631,7 +631,7 @@ export const reviewWithdrawalRequest = async (req, res) => {
       success: true,
       message:
         action === "approve"
-          ? "Simulated withdrawal approved successfully."
+          ? "Withdrawal approved successfully."
           : "Withdrawal request rejected successfully.",
       withdrawal: reviewedWithdrawal,
     });

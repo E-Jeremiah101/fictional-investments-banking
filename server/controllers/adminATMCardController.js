@@ -270,14 +270,14 @@ export const reviewATMCardRequest = async (req, res) => {
       success: true,
       message:
         result.action === "approved"
-          ? "The simulated ATM card application has been approved."
+          ? "The Virtual Card application has been approved."
           : result.withdrawalId
-            ? "The ATM card application was rejected, and its linked withdrawal was also rejected."
-            : "The simulated ATM card application has been rejected.",
+            ? "The Virtual Card application was rejected, and its linked withdrawal was also rejected."
+            : "The Vitual Card application has been rejected.",
       result,
     });
   } catch (error) {
-    console.error("Review ATM card request error:", error);
+    console.error("Review Virtual Card request error:", error);
 
     return res.status(400).json({
       success: false,

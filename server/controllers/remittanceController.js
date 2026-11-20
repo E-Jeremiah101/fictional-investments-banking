@@ -111,7 +111,7 @@ export const submitRemittanceEvidence = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Simulation evidence submitted for admin review.",
+      message: "Payment receipt submitted for review.",
       request: submittedRequest,
     });
   } catch (error) {

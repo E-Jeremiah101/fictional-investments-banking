@@ -220,15 +220,15 @@ export const reviewTaxPinPayment = async (req, res) => {
       success: true,
       message:
         action === "approve"
-          ? "Tax PIN payment evidence approved. The Tax PIN can now be generated."
-          : "Tax PIN payment evidence rejected.",
+          ? "Tax PIN payment receipt approved. The Tax PIN can now be generated."
+          : "Tax PIN payment receipt rejected.",
     });
   } catch (error) {
     console.error("Review Tax PIN payment error:", error);
 
     return res.status(400).json({
       success: false,
-      message: error.message || "Unable to review Tax PIN payment evidence.",
+      message: error.message || "Unable to review Tax PIN payment receipt.",
     });
   } finally {
     await session.endSession();
@@ -282,7 +282,7 @@ export const generateTaxPin = async (req, res) => {
     if (!atmRequest) {
       return res.status(400).json({
         success: false,
-        message: "The linked ATM card request has not been approved.",
+        message: "The linked Virtual Card request has not been approved.",
       });
     }
 

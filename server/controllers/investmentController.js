@@ -18,7 +18,7 @@ export const getMyInvestments = async (req, res) => {
     if (!account) {
       return res.status(404).json({
         success: false,
-        message: "Your active simulation account could not be found.",
+        message: "Your active account could not be found.",
       });
     }
 
@@ -75,7 +75,7 @@ export const requestTradingActivation = async (req, res) => {
     if (!account) {
       return res.status(404).json({
         success: false,
-        message: "Your active simulation account could not be found.",
+        message: "Your active account could not be found.",
       });
     }
 
@@ -94,7 +94,7 @@ export const requestTradingActivation = async (req, res) => {
     return res.status(200).json({
       success: true,
       message:
-        "Trading activation is ready. Submit a simulated $300 deposit; it will be credited to your balance when approved.",
+        "You are required to make a deposit of $300 to activate your trading account; it will be credited to your balance when approved.",
       activationAmount: ACTIVATION_AMOUNT_CENTS / 100,
     });
   } catch (error) {

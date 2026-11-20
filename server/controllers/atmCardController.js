@@ -116,7 +116,7 @@ export const createATMCardRequest = async (req, res) => {
     if (acceptedTerms !== true) {
       return res.status(400).json({
         success: false,
-        message: "Accept the simulated card application terms to continue.",
+        message: "Accept the Virtual Card application terms to continue.",
       });
     }
 
@@ -145,14 +145,14 @@ export const createATMCardRequest = async (req, res) => {
       if (withdrawal.status !== "pending") {
         return res.status(400).json({
           success: false,
-          message: "This withdrawal is not eligible for an ATM card request.",
+          message: "This withdrawal is not eligible for a virtual card request.",
         });
       }
 
       if (withdrawal.atmCardRequest) {
         return res.status(409).json({
           success: false,
-          message: "An ATM card request already exists for this withdrawal.",
+          message: "A virtual vard request already exists for this withdrawal.",
         });
       }
     }
@@ -166,7 +166,7 @@ export const createATMCardRequest = async (req, res) => {
     if (existingRequest) {
       return res.status(409).json({
         success: false,
-        message: "You already have an ATM card request in progress.",
+        message: "You already have a virtual card request in progress.",
         atmCardRequest: toATMCardRequestResponse(existingRequest),
       });
     }
@@ -203,11 +203,11 @@ export const createATMCardRequest = async (req, res) => {
     return res.status(201).json({
       success: true,
       message:
-        "Your simulated ATM card application has been created. Continue to the payment-evidence stage for review.",
+        "Your virtual card application has been created. Proceed to submit payment receipt.",
       atmCardRequest: toATMCardRequestResponse(atmCardRequest, withdrawal),
     });
   } catch (error) {
-    console.error("Create ATM card request error:", error);
+    console.error("Create virtual card request error:", error);
 
     return res.status(500).json({
       success: false,
@@ -224,7 +224,7 @@ export const submitATMCardPayment = async (req, res) => {
     if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid ATM card request ID.",
+        message: "Invalid virtual card request ID.",
       });
     }
 
@@ -255,7 +255,7 @@ export const submitATMCardPayment = async (req, res) => {
       return res.status(404).json({
         success: false,
         message:
-          "ATM card request not found or payment evidence has already been submitted.",
+          "Virtual card request not found or payment receipt has already been submitted.",
       });
     }
 
@@ -274,17 +274,17 @@ export const submitATMCardPayment = async (req, res) => {
     return res.status(200).json({
       success: true,
       message:
-        "Simulated payment evidence submitted. Your ATM card request is awaiting admin review.",
+        "Payment receipt submitted. Your virtual card request is awaiting review.",
       atmCardRequest: {
         ...toATMCardRequestResponse(atmCardRequest),
       },
     });
   } catch (error) {
-    console.error("Submit ATM payment evidence error:", error);
+    console.error("Submit virtual payment evidence error:", error);
 
     return res.status(500).json({
       success: false,
-      message: "Unable to submit simulated payment evidence.",
+      message: "Unable to submit payment receipt.",
     });
   }
 };
@@ -334,11 +334,11 @@ export const getMyATMCardRequests = async (req, res) => {
       ),
     });
   } catch (error) {
-    console.error("Get ATM card requests error:", error);
+    console.error("Get virtual card requests error:", error);
 
     return res.status(500).json({
       success: false,
-      message: "Unable to retrieve your ATM card requests.",
+      message: "Unable to retrieve your virtual card requests.",
     });
   }
 };

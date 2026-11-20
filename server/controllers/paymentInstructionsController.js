@@ -55,7 +55,7 @@ export const updatePaymentInstructions = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Demo payment instructions updated.",
+      message: "Payment instructions updated.",
       instructions,
     });
   } catch (error) {

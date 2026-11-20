@@ -176,7 +176,7 @@ export const reviewDeposit = async (req, res) => {
 
       if (!account) {
         throw new Error(
-          "The customer's active simulation account could not be found.",
+          "The customer's active  account could not be found.",
         );
       }
 
@@ -231,8 +231,8 @@ export const reviewDeposit = async (req, res) => {
             type: "deposit",
             description:
               deposit.purpose === "trading_activation"
-                ? "Approved simulated trading activation deposit"
-                : "Approved simulated deposit",
+                ? "Approved trading activation deposit"
+                : "Approved deposit",
             amountCents: deposit.amountCents,
             currency: "USD",
             status: "completed",
@@ -260,8 +260,8 @@ export const reviewDeposit = async (req, res) => {
       message:
         result.action === "approved"
           ? result.purpose === "trading_activation"
-            ? "Simulated activation deposit approved, account balance updated, and trading activated."
-            : "Simulated deposit approved and account balance updated."
+            ? "Activation deposit approved, account balance updated, and trading activated."
+            : "Deposit approved and account balance updated."
           : "Deposit request rejected.",
       result,
     });

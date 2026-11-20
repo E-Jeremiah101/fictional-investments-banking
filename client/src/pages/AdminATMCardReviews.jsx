@@ -14,6 +14,7 @@ import {
   getPendingATMCardRequests,
   reviewATMCardRequest,
 } from "../services/adminATMCardService";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const formatMoney = (amount, currency = "USD") =>
   new Intl.NumberFormat("en-US", {
@@ -38,6 +39,7 @@ export default function AdminATMCardReviews() {
   const [reviewNotes, setReviewNotes] = useState({});
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [pendingReview, setPendingReview] = useState(null);
 
   const loadRequests = useCallback(async () => {
     setLoading(true);
@@ -60,15 +62,13 @@ export default function AdminATMCardReviews() {
     loadRequests();
   }, [loadRequests]);
 
-  const handleReview = async (request, action) => {
-    const actionLabel = action === "approve" ? "approve" : "reject";
+  const handleReview = (request, action) => {
+    setPendingReview({ request, action });
+  };
 
-    const confirmed = window.confirm(
-      `Are you sure you want to ${actionLabel} this  ATM card request?`,
-    );
-
-    if (!confirmed) return;
-
+  const confirmReview = async () => {
+    if (!pendingReview) return;
+    const { request, action } = pendingReview;
     setReviewingId(request.id);
     setError("");
     setNotice("");
@@ -101,6 +101,7 @@ export default function AdminATMCardReviews() {
       );
     } finally {
       setReviewingId("");
+      setPendingReview(null);
     }
   };
 
@@ -393,6 +394,28 @@ export default function AdminATMCardReviews() {
           )}
         </section>
       </main>
+      {pendingReview && (
+        <ConfirmDialog
+          title={
+            pendingReview.action === "approve"
+              ? "Approve ATM card request?"
+              : "Reject ATM card request?"
+          }
+          message={`Are you sure you want to ${
+            pendingReview.action === "approve" ? "approve" : "reject"
+          } this ATM card request?`}
+          confirmLabel={
+            pendingReview.action === "approve"
+              ? "Approve request"
+              : "Reject request"
+          }
+          busy={reviewingId === pendingReview.request.id}
+          busyLabel="Processing…"
+          variant={pendingReview.action === "approve" ? "primary" : "danger"}
+          onCancel={() => setPendingReview(null)}
+          onConfirm={confirmReview}
+        />
+      )}
     </div>
   );
 }

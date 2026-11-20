@@ -17,10 +17,7 @@ import {
   CreditCard,
 } from "lucide-react";
 
-import {
-  getPendingDeposits,
-  reviewDeposit,
-} from "../services/adminDepositService";
+import { getPendingDeposits } from "../services/adminDepositService";
 
 const formatMoney = (amount) =>
   new Intl.NumberFormat("en-US", {
@@ -41,21 +38,21 @@ const formatDate = (date) => {
 const shortcutLinks = [
   {
     label: "Deposit reviews",
-    description: "Review pending demo deposits",
+    description: "Review pending  deposits",
     icon: ArrowDownToLine,
     color: "bg-blue-50 text-blue-600",
     to: "/admin/deposits",
   },
   {
     label: "Remittance reviews",
-    description: "Review simulated payment evidence",
+    description: "Review payment receipt",
     icon: Receipt,
     color: "bg-violet-50 text-violet-600",
     to: "/admin/remittances",
   },
   {
     label: "ATM card reviews",
-    description: "Review card payment evidence",
+    description: "Review card payment receipt",
     icon: CreditCard,
     color: "bg-orange-50 text-orange-600",
     to: "/admin/atm-cards",
@@ -82,9 +79,7 @@ export default function AdminDashboard() {
 
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [reviewingId, setReviewingId] = useState("");
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
 
   const loadRequests = useCallback(async () => {
     setLoading(true);
@@ -112,43 +107,6 @@ export default function AdminDashboard() {
     }
   }, [requests.length, setAdminPendingCount]);
 
-  const handleReview = async (request, action) => {
-    const actionLabel = action === "approve" ? "approve" : "reject";
-    const confirmed = window.confirm(
-      `Are you sure you want to ${actionLabel} this fictional deposit of ${formatMoney(request.amount)}?`,
-    );
-    if (!confirmed) return;
-
-    setReviewingId(request.id);
-    setError("");
-    setNotice("");
-
-    try {
-      const result = await reviewDeposit(
-        request.id,
-        action,
-        action === "approve"
-          ? "Approved for educational simulation"
-          : "Rejected by administrator",
-      );
-
-      setRequests((current) =>
-        current.filter((item) => item.id !== request.id),
-      );
-      setNotice(
-        result.message ||
-          `Demo deposit ${action === "approve" ? "approved" : "rejected"}.`,
-      );
-    } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Unable to review this request. Refresh and try again.",
-      );
-    } finally {
-      setReviewingId("");
-    }
-  };
-
   const pendingTotal = requests.reduce(
     (total, request) => total + (Number(request.amount) || 0),
     0,
@@ -165,16 +123,6 @@ export default function AdminDashboard() {
           <p className="text-[12px] leading-5 text-rose-800">{error}</p>
         </div>
       )}
-      {notice && (
-        <div className="flex items-start gap-2.5 rounded-md border border-emerald-200 bg-emerald-50 px-3.5 py-2.5">
-          <CheckCircle2
-            size={15}
-            className="mt-0.5 shrink-0 text-emerald-600"
-          />
-          <p className="text-[12px] leading-5 text-emerald-900">{notice}</p>
-        </div>
-      )}
-
       {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -186,12 +134,8 @@ export default function AdminDashboard() {
               year: "numeric",
             })}
           </p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">
-            Administration overview
-          </h1>
-          <p className="mt-1 text-[13px] text-slate-500">
-            Monitor and review simulated customer requests.
-          </p>
+  
+
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
           <CalendarDays size={14} className="text-slate-500" />
@@ -206,21 +150,18 @@ export default function AdminDashboard() {
         <StatCard
           title="Pending deposits"
           value={requests.length.toString()}
-          description="Requests awaiting review"
           icon={Clock3}
           color="bg-blue-50 text-blue-600"
         />
         <StatCard
           title="Pending demo value"
           value={formatMoney(pendingTotal)}
-          description="Fictional USD deposit amounts"
           icon={Wallet}
           color="bg-violet-50 text-violet-600"
         />
         <StatCard
           title="Review workspace"
           value="Deposits"
-          description="Review customer submissions"
           icon={ShieldCheck}
           color="bg-emerald-50 text-emerald-600"
         />

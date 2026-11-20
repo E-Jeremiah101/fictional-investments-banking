@@ -159,7 +159,7 @@ export const reviewRemittanceRequest = async (req, res) => {
 
       if (!taxPin || !atmRequest) {
         const error = new Error(
-          "Tax PIN verification or ATM card approval is missing.",
+          "Tax PIN verification or Virtual Card approval is missing.",
         );
         error.statusCode = 400;
         throw error;
@@ -192,14 +192,14 @@ export const reviewRemittanceRequest = async (req, res) => {
 
         if (!account) {
           const error = new Error(
-            "The customer's simulated account is unavailable.",
+            "The customer's account is unavailable.",
           );
           error.statusCode = 400;
           throw error;
         }
 
         if (account.balanceCents < withdrawal.amountCents) {
-          const error = new Error("Insufficient simulated account balance.");
+          const error = new Error("Insufficient account balance.");
           error.statusCode = 400;
           throw error;
         }
@@ -215,7 +215,7 @@ export const reviewRemittanceRequest = async (req, res) => {
         withdrawal.status = "rejected";
         transaction.status = "rejected";
         transaction.rejectionReason =
-          reviewNote.trim() || "Remittance simulation rejected.";
+          reviewNote.trim() || "Remittance  rejected.";
       }
 
       remittance.status = decision === "approve" ? "approved" : "rejected";
@@ -242,8 +242,8 @@ export const reviewRemittanceRequest = async (req, res) => {
       success: true,
       message:
         decision === "approve"
-          ? "Simulated remittance approved. Withdrawal completed."
-          : "Simulated remittance rejected.",
+          ? "Remittance approved. Withdrawal completed."
+          : "Remittance rejected.",
       request: reviewedRequest,
     });
   } catch (error) {

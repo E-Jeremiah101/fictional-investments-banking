@@ -16,6 +16,7 @@ import {
   reviewDeposit,
 } from "../services/adminDepositService";
 import PaymentReceipt from "../components/PaymentReceipt";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const formatMoney = (amount) =>
   new Intl.NumberFormat("en-US", {
@@ -41,6 +42,7 @@ export default function AdminDeposits() {
   const [reviewingId, setReviewingId] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [pendingReview, setPendingReview] = useState(null);
 
   const loadRequests = useCallback(async () => {
     setLoading(true);
@@ -68,13 +70,13 @@ export default function AdminDeposits() {
     }
   }, [requests.length, setAdminPendingCount]);
 
-  const handleReview = async (request, action) => {
-    const actionLabel = action === "approve" ? "approve" : "decline";
-    const confirmed = window.confirm(
-      `Are you sure you want to ${actionLabel} this fictional deposit of ${formatMoney(request.amount)}?`,
-    );
-    if (!confirmed) return;
+  const handleReview = (request, action) => {
+    setPendingReview({ request, action });
+  };
 
+  const confirmReview = async () => {
+    if (!pendingReview) return;
+    const { request, action } = pendingReview;
     setReviewingId(request.id);
     setError("");
     setNotice("");
@@ -100,6 +102,7 @@ export default function AdminDeposits() {
       );
     } finally {
       setReviewingId("");
+      setPendingReview(null);
     }
   };
 
@@ -301,6 +304,30 @@ export default function AdminDeposits() {
           </ul>
         )}
       </section>
+      {pendingReview && (
+        <ConfirmDialog
+          title={
+            pendingReview.action === "approve"
+              ? "Approve deposit?"
+              : "Decline deposit?"
+          }
+          message={`Are you sure you want to ${
+            pendingReview.action === "approve" ? "approve" : "decline"
+          } this  deposit of ${formatMoney(
+            pendingReview.request.amount,
+          )}?`}
+          confirmLabel={
+            pendingReview.action === "approve"
+              ? "Approve deposit"
+              : "Decline deposit"
+          }
+          busy={reviewingId === pendingReview.request.id}
+          busyLabel="Processing…"
+          variant={pendingReview.action === "approve" ? "primary" : "danger"}
+          onCancel={() => setPendingReview(null)}
+          onConfirm={confirmReview}
+        />
+      )}
     </div>
   );
 }

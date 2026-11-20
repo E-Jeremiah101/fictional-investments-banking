@@ -168,7 +168,7 @@ export const submitTaxPinPaymentEvidence = async (req, res) => {
     return res.status(200).json({
       success: true,
       message:
-        "Your fictional Tax PIN payment evidence has been submitted for administrator review.",
+        "Your Tax PIN payment receipt has been submitted for review.",
       taxPin: {
         id: taxPin._id,
         withdrawalId: withdrawal._id,
@@ -179,7 +179,7 @@ export const submitTaxPinPaymentEvidence = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Submit Tax PIN payment evidence error:", error);
+    console.error("Submit Tax PIN payment receipt error:", error);
 
     return res.status(500).json({
       success: false,
@@ -349,7 +349,7 @@ export const verifyTaxPin = async (req, res) => {
           remittanceFeeCents < 1
         ) {
           const error = new Error(
-            "Unable to calculate the simulated remittance fee.",
+            "Unable to calculate the remittance fee.",
           );
           error.statusCode = 400;
           throw error;
