@@ -634,13 +634,13 @@ export default function Investments() {
     return { points, currentPrice, change, changePct };
   }, [prices]);
 
-  const handleActivate = async () => {
+  const handleContinueToDeposit = async () => {
     setActivating(true);
     setError("");
     try {
       await requestTradingActivation();
-      await loadInvestment();
       setShowActivationModal(false);
+      navigate("/deposit?purpose=trading_activation&amount=300");
     } catch (err) {
       setError(
         err.response?.data?.message || "Unable to start trading activation.",
@@ -654,11 +654,6 @@ export default function Investments() {
     setError("");
     setLoading(true);
     loadInvestment();
-  };
-
-  const handleContinueToDeposit = () => {
-    setShowActivationModal(false);
-    navigate("/deposit?purpose=trading_activation&amount=300");
   };
 
   const tradingStatus = investment?.tradingStatus || "inactive";
@@ -904,6 +899,7 @@ export default function Investments() {
           onClose={() => !activating && setShowActivationModal(false)}
           onContinue={handleContinueToDeposit}
           activating={activating}
+          error={error}
         />
       )}
 
@@ -940,7 +936,7 @@ function StatusPill({ status }) {
   );
 }
 
-function ActivationModal({ onClose, onContinue, activating }) {
+function ActivationModal({ onClose, onContinue, activating, error }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 backdrop-blur-sm"
@@ -978,6 +974,15 @@ function ActivationModal({ onClose, onContinue, activating }) {
         </div>
 
         <div className="space-y-4 px-6 py-5">
+          {error && (
+            <div
+              role="alert"
+              className="flex items-start gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2.5 text-[12.5px] text-red-800"
+            >
+              <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-600" />
+              <span>{error}</span>
+            </div>
+          )}
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-center">
             <p className="text-[10.5px] font-semibold uppercase tracking-wider text-slate-500">
               Activation fee
