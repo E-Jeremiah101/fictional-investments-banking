@@ -11,7 +11,6 @@ import AdminSupportChat from "./pages/AdminSupportChat";
 import AppLayout from "./components/AppLayout";
 import AppmobileLayout from "./components/AppmobileLayout";
 import AdminLayout from "./components/AdminLayout";
-import GlobalLoadingOverlay from "./components/GlobalLoadingOverlay";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -134,7 +133,6 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <GlobalLoadingOverlay />
         <AppRoutes />
       </AuthProvider>
     </BrowserRouter>

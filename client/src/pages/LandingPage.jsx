@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   Building2,
@@ -171,9 +171,6 @@ export default function LandingPage() {
               <p className="text-[14px] font-bold leading-tight tracking-tight text-white">
                 PrimeStone Capital
               </p>
-              <p className="text-[10px] leading-tight text-slate-400">
-                Investment Banking
-              </p>
             </div>
           </Link>
 
@@ -286,16 +283,9 @@ export default function LandingPage() {
           <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
             {/* Copy */}
             <div>
-              <Reveal dir="left" distance={28}>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-medium text-blue-200 backdrop-blur">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />A
-                  private banking experience
-                </div>
-              </Reveal>
-
               <Reveal dir="left" delay={120}>
                 <h1 className="mt-6 text-4xl font-bold leading-[1.08] tracking-tight text-white md:text-5xl lg:text-6xl">
-                  A disciplined home
+                  A modern bank built 
                   <br />
                   for considered
                   <br />
@@ -307,10 +297,10 @@ export default function LandingPage() {
 
               <Reveal dir="left" delay={220}>
                 <p className="mt-6 max-w-xl text-[15px] leading-7 text-slate-300 md:text-base">
-                  PrimeStone Capital is a private investment platform for
-                  clients who value clarity over noise. Curated portfolios,
-                  institutional research, and dedicated advisory — built around
-                  your objectives.
+                  PrimeStone Capital is a banking system for individuals who
+                  want their money handled with clarity. Everyday banking,
+                  curated investment portfolios, and dedicated advisory built
+                  around your objectives
                 </p>
               </Reveal>
 
@@ -355,7 +345,7 @@ export default function LandingPage() {
             </div>
 
             {/* Portfolio card */}
-            <Reveal dir="right" delay={300} distance={40}>
+            {/* <Reveal dir="right" delay={300} distance={40}>
               <div className="relative">
                 <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-blue-500/30 via-transparent to-emerald-500/20 blur-2xl" />
                 <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur-xl">
@@ -436,7 +426,9 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-            </Reveal>
+            </Reveal> */}
+
+            <PortfolioCard />
           </div>
         </div>
 
@@ -466,7 +458,7 @@ export default function LandingPage() {
             },
             { label: "Private clients", value: 12400, suffix: "+" },
             { label: "Markets covered", value: 40, suffix: "+" },
-            { label: "Years of expertise", value: 22, suffix: "" },
+            { label: "Years of expertise", value: 10, suffix: "" },
           ].map((s, i) => (
             <Reveal key={s.label} delay={i * 80}>
               <div>
@@ -487,9 +479,9 @@ export default function LandingPage() {
 
         {/* Returning-client CTA */}
         <div className="mx-auto max-w-7xl px-4 pb-10 md:px-8">
-          <div className="flex flex-col items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 sm:flex-row">
+          <div className="flex flex-col items-center justify-between gap-3 rounded-2xl   bg-slate-50 px-5 py-4 sm:flex-row">
             <p className="text-[13px] text-slate-600">
-              Already a PrimeStone Capital client?
+              Have an account with PrimeStone Capital?
             </p>
             <div className="flex gap-2">
               <Link
@@ -625,7 +617,7 @@ export default function LandingPage() {
               {
                 icon: Globe2,
                 title: "Global market access",
-                body: "Invest across 40+ markets from one account — with local settlement and multi-currency support.",
+                body: "Invest across 40+ markets from one account  with local settlement and multi-currency support.",
                 color: "bg-sky-50 text-sky-600",
               },
               {
@@ -673,7 +665,7 @@ export default function LandingPage() {
               <Reveal dir="left" delay={160}>
                 <p className="mt-4 max-w-lg text-[15px] leading-7 text-slate-600">
                   Every portfolio we offer is constructed by our investment
-                  committee around a specific objective — growth, income, or
+                  committee around a specific objective growth, income, or
                   concentrated opportunity. Choose the one that matches your
                   time horizon.
                 </p>
@@ -788,7 +780,7 @@ export default function LandingPage() {
               <Reveal dir="left" delay={160}>
                 <p className="mt-4 text-[15px] leading-7 text-slate-300">
                   We operate with the risk controls, custody standards and
-                  reporting rigor of a private investment bank — and we make
+                  reporting standards of a financial institution and we make
                   every one of them visible to you.
                 </p>
               </Reveal>
@@ -888,23 +880,23 @@ export default function LandingPage() {
             {[
               {
                 quote:
-                  "What I value most is the candor. Every decision is explained, every risk is named. That is rarer than it should be.",
-                name: "Adaeze Okonkwo",
-                role: "Private investor · Lagos",
-                initials: "AO",
-              },
-              {
-                quote:
-                  "Twenty years with a traditional broker, and I finally have the transparency I always asked for. The reporting is exceptional.",
+                  "My salary lands here, my savings sit here, and my investments grow here. One relationship, one standard, no surprises.",
                 name: "Michael Chen",
-                role: "Retired fund manager · Singapore",
+                role: "Operations director · Singapore",
                 initials: "MC",
               },
               {
                 quote:
-                  "The research desk is concise and genuinely actionable. It feels like having an analyst on retainer.",
+                  "I opened a savings account and stayed for the investment desk. The research is concise, honest, and genuinely useful.",
                 name: "Sara Al-Hassan",
-                role: "Family office director · Dubai",
+                role: "Consultant · Dubai",
+                initials: "SA",
+              },
+              {
+                quote:
+                  "The research desk is concise and genuinely actionable. It feels like having an analyst on retainer.",
+                name: "Frank Mullar",
+                role: "Family office director · United Kingdom",
                 initials: "SA",
               },
             ].map((t, i) => (
@@ -976,8 +968,8 @@ export default function LandingPage() {
               <Reveal dir="right" delay={180}>
                 <p className="mt-4 max-w-lg text-[15px] leading-7 text-slate-600">
                   Open your PrimeStone Capital account in minutes and speak with
-                  a dedicated advisor. No minimums, no hidden fees — just a
-                  clear path forward.
+                  a dedicated advisor. No minimums, no hidden fees, just a clear
+                  path forward.
                 </p>
               </Reveal>
               <Reveal dir="right" delay={260}>
@@ -1018,14 +1010,11 @@ export default function LandingPage() {
                   <p className="text-[13px] font-bold leading-tight text-white">
                     PrimeStone Capital
                   </p>
-                  <p className="text-[10px] leading-tight text-slate-400">
-                    Investment Banking
-                  </p>
                 </div>
               </div>
               <p className="mt-4 text-[12px] leading-5 text-slate-400">
-                A private home for considered capital. Built on discipline,
-                transparency and long-term relationships.
+                A modern bank with a considered approach to capital. Built on
+                discipline, transparency, and long-term relationships.
               </p>
             </div>
 
@@ -1092,6 +1081,145 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function PortfolioCard() {
+  // Generate stable random values once per mount
+  const [data] = useState(() => {
+    const portfolioValue = 180000 + Math.random() * 320000; // $180k – $500k
+    const ytdPct = 4 + Math.random() * 24; // +4% to +28%
+    const ytdAmount = (portfolioValue * ytdPct) / 100;
+
+    const riskProfiles = ["Conservative", "Balanced", "Growth", "Aggressive"];
+    const risk = riskProfiles[Math.floor(Math.random() * riskProfiles.length)];
+
+    const allocation = 8 + Math.floor(Math.random() * 17); // 8–24 assets
+
+    return {
+      portfolioValue,
+      ytdPct,
+      ytdAmount,
+      risk,
+      allocation,
+    };
+  });
+
+  // Live timestamp, updates every 30 s so it never goes stale
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 30000);
+    return () => clearInterval(id);
+  }, []);
+
+  const formatMoney = (n) =>
+    n.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 2,
+    });
+
+  const formatCompact = (n) =>
+    n.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+      notation: "compact",
+      maximumFractionDigits: 1,
+    });
+
+  const formattedDate =
+    now
+      .toLocaleString("en-US", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "UTC",
+      })
+      .replace(",", " ·") + " GMT";
+
+  // Build a random but readable sparkline path
+  const sparkline = useMemo(() => {
+    const points = 11;
+    const coords = [];
+    let y = 50 + Math.random() * 20;
+    for (let i = 0; i < points; i++) {
+      // bias upward (smaller y = higher line) to reflect positive trend
+      y -= 2 + Math.random() * 5;
+      y = Math.max(8, Math.min(90, y));
+      const x = (i / (points - 1)) * 400;
+      coords.push([x, y]);
+    }
+    const polyline = coords.map(([x, y]) => `${x},${y}`).join(" ");
+    const polygon = `0,100 ${polyline} 400,100`;
+    return { polyline, polygon };
+  }, []);
+
+  return (
+    <div className="relative">
+      <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-blue-500/30 via-transparent to-emerald-500/20 blur-2xl" />
+      <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur-xl">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[10.5px] font-semibold uppercase tracking-wider text-blue-200">
+              Portfolio value
+            </p>
+            <p className="mt-1.5 text-3xl font-bold tracking-tight text-white tabular-nums">
+              {formatMoney(data.portfolioValue)}
+            </p>
+            <p className="mt-1 text-[10.5px] text-slate-400">
+              As of {formattedDate}
+            </p>
+          </div>
+          <div className="flex items-center gap-1 rounded-md bg-emerald-500/15 px-2 py-1 text-[11px] font-semibold text-emerald-300">
+            <TrendingUp size={11} />+{data.ytdPct.toFixed(2)}%
+          </div>
+        </div>
+
+        <div className="mt-5 h-24">
+          <svg
+            viewBox="0 0 400 100"
+            preserveAspectRatio="none"
+            className="h-full w-full"
+          >
+            <defs>
+              <linearGradient id="heroFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#34d399" stopOpacity="0.35" />
+                <stop offset="100%" stopColor="#34d399" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <polygon points={sparkline.polygon} fill="url(#heroFill)" />
+            <polyline
+              points={sparkline.polyline}
+              fill="none"
+              stroke="#34d399"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+
+        <div className="mt-5 grid grid-cols-3 gap-3 border-t border-white/10 pt-4">
+          {[
+            { l: "YTD return", v: formatCompact(data.ytdAmount) },
+            { l: "Risk", v: data.risk },
+            { l: "Allocation", v: `${data.allocation} assets` },
+          ].map((row) => (
+            <div key={row.l}>
+              <p className="text-[9.5px] font-semibold uppercase tracking-wider text-slate-400">
+                {row.l}
+              </p>
+              <p className="mt-1 text-[13px] font-semibold tabular-nums text-white">
+                {row.v}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
