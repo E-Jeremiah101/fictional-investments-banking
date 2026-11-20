@@ -4,6 +4,7 @@ import {
   ArrowRight,
   AlertCircle,
   ChevronDown,
+  CheckCircle
 } from "lucide-react";
 import {
   createATMCardRequest,
@@ -536,11 +537,9 @@ export default function ATMCardApplication() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
         {/* Right: form */}
 
-        
         <div className="space-y-6">
           {/* Brand picker */}
           <Section title="Apply for new card" description="Card Types">
-            
             <div className="grid gap-3 sm:grid-cols-3">
               {brands.map((b) => {
                 const isSelected = brand === b.id;
@@ -732,10 +731,9 @@ export default function ATMCardApplication() {
                 <span className="text-[12.5px] font-semibold text-gray-800">
                   {l.name}
                 </span>
+
                 {level === l.id && (
-                  <span className="rounded-full bg-[#0b3b8c] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
-                    Selected
-                  </span>
+                  <CheckCircle size={10}/>
                 )}
               </div>
               <span className="text-[12.5px] font-bold tabular-nums text-gray-900">
@@ -755,8 +753,8 @@ export default function ATMCardApplication() {
               className="mt-0.5 h-3.5 w-3.5 accent-[#0b3b8c]"
             />
             <span>
-              I agree to the platform's terms and conditions,
-              including its transaction and verification policies.
+              I agree to the platform's terms and conditions, including its
+              transaction and verification policies.
             </span>
           </label>
         </div>

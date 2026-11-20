@@ -110,7 +110,7 @@ export default function Investments() {
 
 
 
-  const tradingStatus ="inactive";
+  const tradingStatus = investment?.tradingStatus || "inactive";
   const isPositive = chart.change >= 0;
   const isActive = tradingStatus === "active";
   const isAwaitingDeposit = tradingStatus === "awaiting_deposit";
