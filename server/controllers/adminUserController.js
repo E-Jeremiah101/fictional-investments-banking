@@ -17,6 +17,7 @@ const formatTransaction = (transaction) => ({
   status: transaction.status,
   source: transaction.source,
   createdAt: transaction.createdAt,
+  transactionDate: transaction.transactionDate || transaction.createdAt, //just added for testing
   reviewedAt: transaction.reviewedAt,
   reviewedBy: transaction.reviewedBy
     ? {
@@ -137,7 +138,8 @@ export const getAdminUserDetails = async (req, res) => {
           isTest: true,
         })
           .populate("reviewedBy", "firstName lastName email")
-          .sort({ createdAt: -1 })
+          // .sort({ createdAt: -1 }) replaced with the code below
+          .sort({ transactionDate: -1, createdAt: -1 }) //jut this
           .limit(100)
       : [];
 
@@ -192,7 +194,7 @@ export const getAdminUserDetails = async (req, res) => {
 
 export const adjustAdminUserBalance = async (req, res) => {
   const { id } = req.params;
-  const { direction, amount, reason } = req.body;
+  const { direction, amount, reason, transactionDate } = req.body; //i added transactionDate for testing
 
   if (!mongoose.isValidObjectId(id)) {
     return res.status(400).json({
@@ -234,6 +236,27 @@ export const adjustAdminUserBalance = async (req, res) => {
     });
   }
 
+  // Validate the administrator-selected transaction date.testing
+  let selectedTransactionDate = new Date();
+
+  if (transactionDate !== undefined) {
+    if (typeof transactionDate !== "string" || !transactionDate.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Provide a valid transaction date and time.",
+      });
+    }
+
+    selectedTransactionDate = new Date(transactionDate);
+
+    if (Number.isNaN(selectedTransactionDate.getTime())) {
+      return res.status(400).json({
+        success: false,
+        message: "The transaction date and time are invalid.",
+      });
+    }
+  }
+
   const session = await mongoose.startSession();
 
   try {
@@ -260,13 +283,17 @@ export const adjustAdminUserBalance = async (req, res) => {
       }).session(session);
 
       if (!account) {
-        const error = new Error("Customer simulation account not found or inactive.");
+        const error = new Error(
+          "Customer simulation account not found or inactive.",
+        );
         error.statusCode = 404;
         throw error;
       }
 
       if (direction === "debit" && amountCents > account.balanceCents) {
-        const error = new Error("Debit exceeds the customer's available balance.");
+        const error = new Error(
+          "Debit exceeds the customer's available balance.",
+        );
         error.statusCode = 400;
         throw error;
       }
@@ -289,6 +316,7 @@ export const adjustAdminUserBalance = async (req, res) => {
             source: "admin_adjustment",
             reviewedBy: req.user._id,
             reviewedAt: new Date(),
+            transactionDate: selectedTransactionDate, // also esting
             isTest: true,
           },
         ],
@@ -316,7 +344,7 @@ export const adjustAdminUserBalance = async (req, res) => {
   } finally {
     await session.endSession();
   }
-};
+};;
 
 export const deactivateAdminUser = async (req, res) => {
   const { id } = req.params;
