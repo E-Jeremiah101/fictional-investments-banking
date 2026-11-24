@@ -28,7 +28,7 @@ export const getMyInvestments = async (req, res) => {
           account: account._id,
           user: req.user._id,
           isTest: true,
-          status: "completed",
+          status: { $in: ["successful", "completed", "approved"] },
           type: { $in: ["deposit", "adjustment_credit"] },
         },
       },

@@ -22,3 +22,11 @@ export const deactivateAdminUser = async (id) => {
   const response = await api.delete(`/admin/users/${id}`);
   return response.data;
 };
+
+export const getAdminTransactions = async (page = 1) => {
+  const response = await api.get("/admin/users/transactions", {
+    params: { page },
+  });
+
+  return response.data;
+};

@@ -471,18 +471,18 @@
 //                 <td className="px-5 py-4">
 //                   <span
 //                     className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-//                       status === "completed"
+//                       status === "successful"
 //                         ? "bg-emerald-50 text-emerald-700"
-//                         : status === "rejected"
+//                         : status === "failed"
 //                           ? "bg-rose-50 text-rose-700"
 //                           : "bg-amber-50 text-amber-700"
 //                     }`}
 //                   >
 //                     <span
 //                       className={`h-1.5 w-1.5 rounded-full ${
-//                         status === "completed"
+//                         status === "successful"
 //                           ? "bg-emerald-500"
-//                           : status === "rejected"
+//                           : status === "failed"
 //                             ? "bg-rose-500"
 //                             : "bg-amber-500"
 //                       }`}
@@ -672,7 +672,7 @@
 //     return Number(account.balance) || 0;
 //   }, [account]);
 
-//   // Calculate completed money-in and money-out totals for all time
+//   // Calculate successful money-in and money-out totals for all time
 //   // and for the current calendar month.
 //   const expenditureSummary = useMemo(() => {
 //     const now = new Date();
@@ -685,8 +685,7 @@
 //     };
 
 //     transactions.forEach((transaction) => {
-//       // Pending and rejected records are not completed account movements.
-//       if (String(transaction.status || "").toLowerCase() !== "completed") {
+//       if (String(transaction.status || "").toLowerCase() !== "successful") {
 //         return;
 //       }
 
@@ -1220,18 +1219,18 @@
 //                 <td className="px-5 py-4">
 //                   <span
 //                     className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-//                       status === "completed"
+//                       status === "successful"
 //                         ? "bg-emerald-50 text-emerald-700"
-//                         : status === "rejected"
+//                         : status === "failed"
 //                           ? "bg-rose-50 text-rose-700"
 //                           : "bg-amber-50 text-amber-700"
 //                     }`}
 //                   >
 //                     <span
 //                       className={`h-1.5 w-1.5 rounded-full ${
-//                         status === "completed"
+//                         status === "successful"
 //                           ? "bg-emerald-500"
-//                           : status === "rejected"
+//                           : status === "failed"
 //                             ? "bg-rose-500"
 //                             : "bg-amber-500"
 //                       }`}
@@ -1333,7 +1332,6 @@ const formatDate = (date) => {
   return parsedDate.toLocaleDateString("en-US", {
     day: "numeric",
     month: "short",
-    year: "numeric",
   });
 };
 
@@ -1427,7 +1425,7 @@ function Dashboard() {
     return Number(account.balance) || 0;
   }, [account]);
 
-  // Calculate completed money-in and money-out totals for all time
+  // Calculate successful money-in and money-out totals for all time
   // and for the current calendar month.
  const expenditureSummary = useMemo(() => {
    const now = new Date();
@@ -1440,7 +1438,7 @@ function Dashboard() {
    };
 
    transactions.forEach((transaction) => {
-     if (String(transaction.status || "").toLowerCase() !== "completed") {
+     if (String(transaction.status || "").toLowerCase() !== "successful") {
        return;
      }
 
@@ -1824,12 +1822,11 @@ function TransactionTable({ transactions, error, currency, onMakeDeposit }) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[640px] text-left text-sm">
+      <table className="w-full  text-left text-sm">
         <thead className="bg-slate-50/80 text-[11px] uppercase tracking-wider text-slate-500">
           <tr>
-            <th className="px-5 py-3.5 font-semibold">Txn No</th>
             <th className="px-5 py-3.5 font-semibold">Date</th>
-            <th className="px-5 py-3.5 font-semibold">Type</th>
+            {/* <th className="px-5 py-3.5 font-semibold">Type</th> */}
             <th className="px-5 py-3.5 text-right font-semibold">Amount</th>
             <th className="px-5 py-3.5 font-semibold">Status</th>
           </tr>
@@ -1841,26 +1838,25 @@ function TransactionTable({ transactions, error, currency, onMakeDeposit }) {
 
             const isIncoming = INCOMING_TYPES.includes(type);
             const amount = getTransactionAmount(transaction);
-            const status = String(transaction.status || "").toLowerCase();
+            const rawStatus = String(transaction.status || "").toLowerCase();
+            const status =
+              rawStatus === "completed" || rawStatus === "approved"
+                ? "successful"
+                : rawStatus === "rejected"
+                  ? "failed"
+                  : rawStatus;
 
             return (
               <tr
                 key={transaction.id}
                 className="transition hover:bg-slate-50/60"
               >
-                <td className="px-5 py-4 font-medium text-slate-800">
-                  {transaction.reference && (
-                    <p className="mt-0.5 font-mono text-[11px] text-slate-400">
-                      {transaction.reference}
-                    </p>
-                  )}
-                </td>
 
                 <td className="px-5 py-4 text-xs text-slate-500">
                   {formatDate(getTransactionDate(transaction))}
                 </td>
 
-                <td className="px-5 py-4 capitalize text-slate-600">
+                {/* <td className="px-5 py-4 capitalize text-slate-600">
                   {type === "adjustment_credit"
                     ? "Credit"
                     : type === "adjustment_debit"
@@ -1870,7 +1866,7 @@ function TransactionTable({ transactions, error, currency, onMakeDeposit }) {
                         : type === "investment_earnings_debit"
                           ? "Investment earnings debit"
                           : transaction.type || "Transaction"}
-                </td>
+                </td> */}
 
                 <td
                   className={`px-5 py-4 text-right font-semibold ${
@@ -1884,24 +1880,30 @@ function TransactionTable({ transactions, error, currency, onMakeDeposit }) {
                 <td className="px-5 py-4">
                   <span
                     className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                      status === "completed"
+                      status === "successful"
                         ? "bg-emerald-50 text-emerald-700"
-                        : status === "rejected"
+                        : status === "failed"
                           ? "bg-rose-50 text-rose-700"
                           : "bg-amber-50 text-amber-700"
                     }`}
                   >
                     <span
                       className={`h-1.5 w-1.5 rounded-full ${
-                        status === "completed"
+                        status === "successful"
                           ? "bg-emerald-500"
-                          : status === "rejected"
+                          : status === "failed"
                             ? "bg-rose-500"
                             : "bg-amber-500"
                       }`}
                     />
 
-                    {transaction.status || "Unknown"}
+                    {status === "successful"
+                      ? "Successful"
+                      : status === "failed"
+                        ? "Failed"
+                        : status === "pending"
+                          ? "Pending"
+                          : transaction.status || "Unknown"}
                   </span>
                 </td>
               </tr>

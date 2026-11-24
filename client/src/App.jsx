@@ -13,6 +13,7 @@ import AppmobileLayout from "./components/AppmobileLayout";
 import AdminLayout from "./components/AdminLayout";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminTransactions from "./pages/AdminTransactions";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminDeposits from "./pages/AdminDeposits";
 import AdminRoute from "./components/AdminRoute";
@@ -89,6 +90,7 @@ function AppRoutes() {
         }
       >
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/transactions" element={<AdminTransactions />} />
         <Route path="/admin/deposits" element={<AdminDeposits />} />
         <Route path="/admin/atm-cards" element={<AdminATMCardReviews />} />
         <Route path="/admin/remittances" element={<AdminRemittances />} />

@@ -14,7 +14,12 @@ const formatTransaction = (transaction) => ({
   amount: transaction.amountCents / 100,
   amountCents: transaction.amountCents,
   currency: transaction.currency,
-  status: transaction.status,
+  status:
+    transaction.status === "completed" || transaction.status === "approved"
+      ? "successful"
+      : transaction.status === "rejected"
+        ? "failed"
+        : transaction.status,
   source: transaction.source,
   createdAt: transaction.createdAt,
   transactionDate: transaction.transactionDate || transaction.createdAt, //just added for testing
@@ -284,7 +289,7 @@ export const adjustAdminUserBalance = async (req, res) => {
 
       if (!account) {
         const error = new Error(
-          "Customer simulation account not found or inactive.",
+          "Customer account not found or inactive.",
         );
         error.statusCode = 404;
         throw error;
@@ -312,7 +317,7 @@ export const adjustAdminUserBalance = async (req, res) => {
             description: `Administrator adjustment (${direction}): ${reason.trim()}`,
             amountCents,
             currency: account.currency,
-            status: "completed",
+            status: "successful",
             source: "admin_adjustment",
             reviewedBy: req.user._id,
             reviewedAt: new Date(),
@@ -345,6 +350,96 @@ export const adjustAdminUserBalance = async (req, res) => {
     await session.endSession();
   }
 };;
+
+
+export const getAdminTransactions = async (req, res) => {
+  try {
+    const requestedPage = Number.parseInt(req.query.page, 10) || 1;
+    const page = Math.max(1, requestedPage);
+
+    const [totalTransactions, transactions] = await Promise.all([
+      Transaction.countDocuments({ isTest: true }),
+
+      Transaction.find({ isTest: true })
+        .populate("user", "firstName lastName email")
+        .populate("account", "accountNumber accountType")
+        .populate("reviewedBy", "firstName lastName email")
+        .sort({ transactionDate: -1, createdAt: -1 })
+        .skip((page - 1) * PAGE_SIZE)
+        .limit(PAGE_SIZE)
+        .lean(),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      totalTransactions,
+      page,
+      pageSize: PAGE_SIZE,
+      pages: Math.ceil(totalTransactions / PAGE_SIZE),
+
+      transactions: transactions.map((transaction) => ({
+        id: transaction._id,
+        reference: transaction.reference,
+        type: transaction.type,
+        description: transaction.description,
+
+        amount: transaction.amountCents / 100,
+        amountCents: transaction.amountCents,
+        currency: transaction.currency,
+
+        status:
+          transaction.status === "completed" ||
+          transaction.status === "approved"
+            ? "successful"
+            : transaction.status === "rejected"
+              ? "failed"
+              : transaction.status,
+
+        source: transaction.source,
+        isTest: transaction.isTest,
+
+        createdAt: transaction.createdAt,
+        transactionDate: transaction.transactionDate || transaction.createdAt,
+
+        reviewedAt: transaction.reviewedAt,
+        rejectionReason: transaction.rejectionReason,
+
+        user: transaction.user
+          ? {
+              id: transaction.user._id,
+              firstName: transaction.user.firstName,
+              lastName: transaction.user.lastName,
+              email: transaction.user.email,
+            }
+          : null,
+
+        account: transaction.account
+          ? {
+              id: transaction.account._id,
+              accountNumber: transaction.account.accountNumber,
+              accountType: transaction.account.accountType,
+            }
+          : null,
+
+        reviewedBy: transaction.reviewedBy
+          ? {
+              firstName: transaction.reviewedBy.firstName,
+              lastName: transaction.reviewedBy.lastName,
+              email: transaction.reviewedBy.email,
+            }
+          : null,
+      })),
+    });
+  } catch (error) {
+    console.error("Get all admin transactions error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to retrieve all transactions.",
+    });
+  }
+};
+
 
 export const deactivateAdminUser = async (req, res) => {
   const { id } = req.params;

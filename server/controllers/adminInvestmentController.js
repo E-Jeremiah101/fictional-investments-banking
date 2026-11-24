@@ -148,7 +148,7 @@ export const adjustInvestorEarnings = async (req, res) => {
             description: `Administrator ${direction}d investment earnings: ${reason.trim()}`,
             amountCents,
             currency: account.currency,
-            status: "completed",
+            status: "successful",
             source: "admin_adjustment",
             reviewedBy: req.user._id,
             reviewedAt: new Date(),

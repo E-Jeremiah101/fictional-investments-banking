@@ -247,7 +247,7 @@ export const reviewATMCardRequest = async (req, res) => {
             );
           }
 
-          transaction.status = "rejected";
+          transaction.status = "failed";
           transaction.reviewedBy = req.user._id;
           transaction.reviewedAt = reviewedAt;
           transaction.rejectionReason =

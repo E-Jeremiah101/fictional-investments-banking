@@ -235,7 +235,7 @@ export const reviewDeposit = async (req, res) => {
                 : "Approved deposit",
             amountCents: deposit.amountCents,
             currency: "USD",
-            status: "completed",
+            status: "successful",
             source: deposit.method,
             isTest: true,
             reviewedBy: req.user._id,

@@ -15,6 +15,7 @@ import {
   ChevronRight,
   CalendarDays,
   CreditCard,
+  ArrowLeftRight,
 } from "lucide-react";
 
 import { getPendingDeposits } from "../services/adminDepositService";
@@ -63,6 +64,14 @@ const shortcutLinks = [
     icon: KeyRound,
     color: "bg-amber-50 text-amber-600",
     to: "/admin/tax-pins",
+  },
+  {
+    label: "All transactions",
+    description: "View every customer's transaction history",
+    icon: ArrowLeftRight,
+    color: "bg-emerald-50 text-emerald-600",
+    to: "/admin/transactions",
+    wide: true,
   },
   {
     label: "User management",

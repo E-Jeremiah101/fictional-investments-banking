@@ -210,10 +210,10 @@ export const reviewRemittanceRequest = async (req, res) => {
         await account.save({ session });
 
         withdrawal.status = "approved";
-        transaction.status = "completed";
+        transaction.status = "successful";
       } else {
         withdrawal.status = "rejected";
-        transaction.status = "rejected";
+        transaction.status = "failed";
         transaction.rejectionReason =
           reviewNote.trim() || "Remittance  rejected.";
       }
