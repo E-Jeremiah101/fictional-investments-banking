@@ -1781,7 +1781,7 @@ function ExpenditureCard({ title, subtitle, total, currency, icon: Icon }) {
         </div>
       </div>
 
-      <h3 className="truncate text-sm font-semibold text-slate-900 sm:text-base">
+      <h3 className="truncate text-sm font-semibold text-slate-700 sm:text-base">
         {title}
       </h3>
 
@@ -1789,7 +1789,7 @@ function ExpenditureCard({ title, subtitle, total, currency, icon: Icon }) {
 
       <div className="mt-2">
 
-        <h4 className="mt-1 break-words text-[1.3rem] font-bold text-slate-900 sm:text-2xl">
+        <h4 className="mt-1 break-words text-[1.2rem] font-bold text-slate-900 sm:text-2xl">
           {formatMoney(total, currency)}
         </h4>
       </div>
