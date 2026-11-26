@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   AlertCircle,
   ArrowLeft,
   CheckCircle2,
   Clock3,
+  CreditCard,
+  IdCard,
   LoaderCircle,
-  ShieldCheck,
+  UploadCloud,
+  X,
+  FileText,
+  Image as ImageIcon,
 } from "lucide-react";
 import {
   loanDurations,
@@ -27,6 +32,9 @@ const emptyForm = {
   acceptedTerms: false,
 };
 
+const ACCEPTED_ID_TYPES = ["image/jpeg", "image/png", "application/pdf"];
+const MAX_ID_FILE_BYTES = 5 * 1024 * 1024;
+
 const statusStyles = {
   pending: "bg-amber-50 text-amber-800 ring-amber-200",
   approved: "bg-emerald-50 text-emerald-800 ring-emerald-200",
@@ -40,9 +48,40 @@ const formatMoney = (amount) =>
     minimumFractionDigits: 2,
   }).format(Number(amount) || 0);
 
+const formatFileSize = (bytes) =>
+  bytes >= 1024 * 1024
+    ? `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+    : `${Math.ceil(bytes / 1024)} KB`;
+
+const validateFile = (file) => {
+  if (!file) return "Required.";
+  if (!ACCEPTED_ID_TYPES.includes(file.type))
+    return "Must be a JPG, PNG or PDF file.";
+  if (file.size > MAX_ID_FILE_BYTES) return "Must be 5MB or smaller.";
+  return null;
+};
+
+const focusRing =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b3b8c]";
+
+const inputClass = `mt-1.5 block w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#0b3b8c] focus:ring-1 focus:ring-[#0b3b8c] ${focusRing}`;
+
 export default function LoanApplication() {
   const navigate = useNavigate();
+  const idInputRef = useRef(null);
+  const atmFrontInputRef = useRef(null);
+  const atmBackInputRef = useRef(null);
+
   const [form, setForm] = useState(emptyForm);
+  const [governmentIdFile, setGovernmentIdFile] = useState(null);
+  const [atmFrontFile, setAtmFrontFile] = useState(null);
+  const [atmBackFile, setAtmBackFile] = useState(null);
+  const [fileErrors, setFileErrors] = useState({
+    governmentId: "",
+    atmFront: "",
+    atmBack: "",
+  });
+
   const [applications, setApplications] = useState([]);
   const [loadingApplications, setLoadingApplications] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -80,21 +119,75 @@ export default function LoanApplication() {
     }));
   };
 
+  // Accept a File directly (from drop or picker) or an input event.
+  const acceptFile = (key, setter, file, inputEl) => {
+    const message = validateFile(file);
+    if (message) {
+      setter(null);
+      if (inputEl) inputEl.value = "";
+      setFileErrors((e) => ({ ...e, [key]: message }));
+      return;
+    }
+    setter(file);
+    setFileErrors((e) => ({ ...e, [key]: "" }));
+  };
+
+  const makeFileHandler = (key, setter) => (event) => {
+    const file = event.target.files?.[0] || null;
+    acceptFile(key, setter, file, event.target);
+  };
+
+  const clearFile = (key, setter, inputRef) => {
+    setter(null);
+    if (inputRef.current) inputRef.current.value = "";
+    setFileErrors((e) => ({ ...e, [key]: "" }));
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
     setSuccess("");
+
+    const idError = validateFile(governmentIdFile);
+    const frontError = validateFile(atmFrontFile);
+    const backError = validateFile(atmBackFile);
+
+    if (idError || frontError || backError) {
+      setFileErrors({
+        governmentId: idError || "",
+        atmFront: frontError || "",
+        atmBack: backError || "",
+      });
+      setError("Upload all three required images to continue.");
+      return;
+    }
+
     setSubmitting(true);
 
     try {
-      const response = await createLoanApplication({
-        ...form,
-        loanAmount: Number(form.loanAmount),
-        durationMonths: Number(form.durationMonths),
-      });
+      const payload = new FormData();
+      payload.append("loanAmount", form.loanAmount);
+      payload.append("durationMonths", form.durationMonths);
+      payload.append("creditFacility", form.creditFacility);
+      payload.append("purpose", form.purpose);
+      payload.append("monthlyNetIncome", form.monthlyNetIncome);
+      payload.append("acceptedTerms", form.acceptedTerms);
+      payload.append("governmentId", governmentIdFile);
+      payload.append("atmCardFront", atmFrontFile);
+      payload.append("atmCardBack", atmBackFile);
+
+      const response = await createLoanApplication(payload);
       setApplications((current) => [response.application, ...current]);
       setSuccess(response.message || "Your loan application was submitted.");
+
       setForm(emptyForm);
+      setGovernmentIdFile(null);
+      setAtmFrontFile(null);
+      setAtmBackFile(null);
+      setFileErrors({ governmentId: "", atmFront: "", atmBack: "" });
+      if (idInputRef.current) idInputRef.current.value = "";
+      if (atmFrontInputRef.current) atmFrontInputRef.current.value = "";
+      if (atmBackInputRef.current) atmBackInputRef.current.value = "";
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ||
@@ -105,269 +198,492 @@ export default function LoanApplication() {
     }
   };
 
-  const inputClass =
-    "mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#0b3b8c] focus:ring-2 focus:ring-blue-100";
-
   return (
-    <div className="mx-auto max-w-4xl space-y-6 px-4 py-6 sm:px-6 sm:py-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <Link
-            to="/loans"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0b3b8c] hover:underline"
-          >
-            <ArrowLeft size={15} />
-            Back to Information
-          </Link>
-          <h1 className="mt-3 text-2xl font-bold tracking-tight text-slate-900">
-            Loan Application Form
-          </h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Complete the form below to apply for your loan.
-          </p>
-        </div>
-        <p className="text-xs text-slate-500">
-          <span className="text-rose-600">*</span> Required fields
-        </p>
-      </div>
+    <div className="min-h-screen bg-white">
+      <div className="mx-auto max-w-2xl px-5 sm:px-6 sm:py-14">
+      
 
+
+
+        <p className="text-[1.1rem] leading-6 text-slate-900">
+          Complete the form below. It takes about 5 minutes.
+        </p>
+
+        {error && (
+          <div
+            role="alert"
+            className="mt-6 flex items-start gap-2.5 border-l-2 border-rose-500 pl-3 text-sm text-rose-800"
+          >
+            <AlertCircle
+              size={15}
+              className="mt-0.5 shrink-0"
+              aria-hidden="true"
+            />
+            <p>{error}</p>
+          </div>
+        )}
+        {success && (
+          <div
+            role="status"
+            className="mt-6 flex items-start gap-2.5 border-l-2 border-emerald-500 pl-3 text-sm text-emerald-800"
+          >
+            <CheckCircle2
+              size={15}
+              className="mt-0.5 shrink-0"
+              aria-hidden="true"
+            />
+            <p>{success}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="mt-8">
+          <fieldset disabled={submitting} className="space-y-10">
+            {/* 01 — Loan details */}
+            <section aria-labelledby="loan-details-title">
   
 
-      {error && (
-        <div
-          role="alert"
-          className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800"
-        >
-          <AlertCircle size={17} className="mt-0.5 shrink-0" />
-          <p>{error}</p>
-        </div>
-      )}
-      {success && (
-        <div
-          role="status"
-          className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800"
-        >
-          <CheckCircle2 size={17} className="mt-0.5 shrink-0" />
-          <p>{success}</p>
-        </div>
-      )}
+              <div className="mt-5 space-y-5">
+                <Field label="Loan amount" htmlFor="loanAmount" required>
+                  <div className="relative">
+                    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-500">
+                      $
+                    </span>
+                    <input
+                      id="loanAmount"
+                      name="loanAmount"
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      required
+                      value={form.loanAmount}
+                      onChange={updateForm}
+                      placeholder="0.00"
+                      className={`${inputClass} pl-7 tabular-nums`}
+                    />
+                  </div>
+                </Field>
 
-      <form
-        onSubmit={handleSubmit}
-        className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-      >
-        <fieldset disabled={submitting} className="space-y-8 p-5 sm:p-8">
-          <section aria-labelledby="loan-details-title">
-            <h2
-              id="loan-details-title"
-              className="border-b border-slate-100 pb-3 text-base font-bold text-slate-900"
-            >
-              Loan Details
-            </h2>
-            <div className="mt-5 grid gap-5 sm:grid-cols-2">
-              <label className="block text-sm font-semibold text-slate-700">
-                Loan Amount (USD) <Required />
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-500">
-                    $
-                  </span>
-                  <input
-                    name="loanAmount"
-                    type="number"
-                    min="0.01"
-                    step="0.01"
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <Field label="Duration" htmlFor="durationMonths" required>
+                    <select
+                      id="durationMonths"
+                      name="durationMonths"
+                      required
+                      value={form.durationMonths}
+                      onChange={updateForm}
+                      className={inputClass}
+                    >
+                      <option value="">Select a duration</option>
+                      {loanDurations.map(({ value, label }) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+
+                  <Field
+                    label="Monthly net income"
+                    htmlFor="monthlyNetIncome"
                     required
-                    value={form.loanAmount}
+                  >
+                    <select
+                      id="monthlyNetIncome"
+                      name="monthlyNetIncome"
+                      required
+                      value={form.monthlyNetIncome}
+                      onChange={updateForm}
+                      className={inputClass}
+                    >
+                      <option value="">Select a range</option>
+                      {monthlyIncomeRanges.map((range) => (
+                        <option key={range} value={range}>
+                          {range}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                </div>
+
+                <Field
+                  label="Credit facility"
+                  htmlFor="creditFacility"
+                  required
+                >
+                  <select
+                    id="creditFacility"
+                    name="creditFacility"
+                    required
+                    value={form.creditFacility}
                     onChange={updateForm}
-                    placeholder="0.00"
-                    className={`${inputClass} pl-8`}
+                    className={inputClass}
+                  >
+                    <option value="">Select a loan or credit facility</option>
+                    {loanFacilities.map((facility) => (
+                      <option key={facility} value={facility}>
+                        {facility}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+
+                <Field
+                  label="Purpose of loan"
+                  htmlFor="purpose"
+                  required
+                  hint="Max 2000 characters"
+                >
+                  <textarea
+                    id="purpose"
+                    name="purpose"
+                    required
+                    maxLength={2000}
+                    rows={4}
+                    value={form.purpose}
+                    onChange={updateForm}
+                    placeholder="Tell us what you plan to use the loan for."
+                    className={`${inputClass} resize-y`}
                   />
-                </div>
-              </label>
+                </Field>
+              </div>
+            </section>
 
-              <label className="block text-sm font-semibold text-slate-700">
-                Duration <Required />
-                <select
-                  name="durationMonths"
-                  required
-                  value={form.durationMonths}
-                  onChange={updateForm}
-                  className={inputClass}
+            {/* 02 — Documents */}
+            <section aria-labelledby="uploads-title">
+              <div className="flex items-baseline gap-3">
+               
+                <h2
+                  id="uploads-title"
+                  className="text-sm font-semibold text-slate-900"
                 >
-                  <option value="">Select a duration</option>
-                  {loanDurations.map(({ value, label }) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                 Valid Documents
+                </h2>
+              </div>
 
-              <label className="block text-sm font-semibold text-slate-700 sm:col-span-2">
-                Credit Facility <Required />
-                <select
-                  name="creditFacility"
-                  required
-                  value={form.creditFacility}
-                  onChange={updateForm}
-                  className={inputClass}
-                >
-                  <option value="">Select a loan/credit facility</option>
-                  {loanFacilities.map((facility) => (
-                    <option key={facility} value={facility}>
-                      {facility}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="block text-sm font-semibold text-slate-700 sm:col-span-2">
-                Purpose of Loan <Required />
-                <textarea
-                  name="purpose"
-                  required
-                  maxLength={2000}
-                  rows={4}
-                  value={form.purpose}
-                  onChange={updateForm}
-                  placeholder="Tell us what you plan to use the loan for."
-                  className={`${inputClass} resize-y`}
-                />
-              </label>
-            </div>
-          </section>
-
-          <section aria-labelledby="financial-info-title">
-            <h2
-              id="financial-info-title"
-              className="border-b border-slate-100 pb-3 text-base font-bold text-slate-900"
-            >
-              Financial Information
-            </h2>
-            <label className="mt-5 block text-sm font-semibold text-slate-700">
-              Monthly Net Income <Required />
-              <select
-                name="monthlyNetIncome"
-                required
-                value={form.monthlyNetIncome}
-                onChange={updateForm}
-                className={inputClass}
-              >
-                <option value="">Select an income range</option>
-                {monthlyIncomeRanges.map((range) => (
-                  <option key={range} value={range}>
-                    {range}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </section>
-
-          <section className="space-y-3">
-            <label className="flex items-start gap-3 text-sm text-slate-700">
-              <input
-                type="checkbox"
-                name="acceptedTerms"
-                required
-                checked={form.acceptedTerms}
-                onChange={updateForm}
-                className="mt-1 h-4 w-4 rounded border-slate-300 text-[#0b3b8c] focus:ring-[#0b3b8c]"
-              />
-              <span>
-                I agree to the terms and conditions. I confirm the information
-                is accurate and consent to it being used to review this
-                 application.
-              </span>
-            </label>
-
-          </section>
-        </fieldset>
-
-        <div className="flex flex-col-reverse gap-2 border-t border-slate-100 bg-slate-50/70 px-5 py-4 sm:flex-row sm:justify-end sm:px-8">
-          <button
-            type="button"
-            onClick={() => navigate("/loans")}
-            disabled={submitting}
-            className="rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0b3b8c] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#092f70] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {submitting ? (
-              <>
-                <LoaderCircle size={16} className="animate-spin" />
-                Submitting…
-              </>
-            ) : (
-              "Submit Loan Application"
-            )}
-          </button>
-        </div>
-      </form>
-
-      <section aria-labelledby="my-loan-applications-title">
-        <div className="flex items-center justify-between gap-3">
-          <h2
-            id="my-loan-applications-title"
-            className="text-lg font-bold text-slate-900"
-          >
-            My Loan Applications
-          </h2>
-          {loadingApplications && (
-            <LoaderCircle
-              size={17}
-              className="animate-spin text-slate-500"
-              aria-label="Loading applications"
-            />
-          )}
-        </div>
-        {!loadingApplications && applications.length === 0 ? (
-          <p className="mt-3 rounded-xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-500">
-            You have no loan applications yet.
-          </p>
-        ) : (
-          <ul className="mt-3 space-y-3">
-            {applications.map((application) => (
-              <li
-                key={application.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">
-                    {application.creditFacility} ·{" "}
-                    {formatMoney(application.loanAmount)}
-                  </p>
-                  <p className="mt-1 text-xs text-slate-500">
-                    {application.durationMonths} months · Submitted{" "}
-                    {new Date(application.createdAt).toLocaleDateString()}
-                  </p>
-                  {application.reviewNote && (
-                    <p className="mt-2 max-w-2xl text-xs leading-5 text-slate-600">
-                      Review note: {application.reviewNote}
-                    </p>
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <UploadSlot
+                  id="governmentId"
+                  icon={IdCard}
+                  label="Government-issued ID"
+                  hint="National ID, passport or driver's license"
+                  inputRef={idInputRef}
+                  file={governmentIdFile}
+                  error={fileErrors.governmentId}
+                  onChange={makeFileHandler(
+                    "governmentId",
+                    setGovernmentIdFile,
                   )}
-                </div>
-                <span
-                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${
-                    statusStyles[application.status] || statusStyles.pending
-                  }`}
+                  onDropFile={(file) =>
+                    acceptFile(
+                      "governmentId",
+                      setGovernmentIdFile,
+                      file,
+                      idInputRef.current,
+                    )
+                  }
+                  onClear={() =>
+                    clearFile("governmentId", setGovernmentIdFile, idInputRef)
+                  }
+                />
+                <UploadSlot
+                  id="atmFront"
+                  icon={CreditCard}
+                  label="ATM card (front)"
+                  hint="The side showing your card number"
+                  inputRef={atmFrontInputRef}
+                  file={atmFrontFile}
+                  error={fileErrors.atmFront}
+                  onChange={makeFileHandler("atmFront", setAtmFrontFile)}
+                  onDropFile={(file) =>
+                    acceptFile(
+                      "atmFront",
+                      setAtmFrontFile,
+                      file,
+                      atmFrontInputRef.current,
+                    )
+                  }
+                  onClear={() =>
+                    clearFile("atmFront", setAtmFrontFile, atmFrontInputRef)
+                  }
+                />
+                <UploadSlot
+                  id="atmBack"
+                  icon={CreditCard}
+                  label="ATM card (back)"
+                  hint="The side with the signature strip"
+                  inputRef={atmBackInputRef}
+                  file={atmBackFile}
+                  error={fileErrors.atmBack}
+                  onChange={makeFileHandler("atmBack", setAtmBackFile)}
+                  onDropFile={(file) =>
+                    acceptFile(
+                      "atmBack",
+                      setAtmBackFile,
+                      file,
+                      atmBackInputRef.current,
+                    )
+                  }
+                  onClear={() =>
+                    clearFile("atmBack", setAtmBackFile, atmBackInputRef)
+                  }
+                />
+              </div>
+            </section>
+
+            {/* 03 — Confirm */}
+            <section aria-labelledby="terms-title">
+              <div className="flex items-baseline gap-3">
+               
+                <h2
+                  id="terms-title"
+                  className="text-sm font-semibold text-slate-900"
                 >
-                  {application.status === "pending" && <Clock3 size={13} />}
-                  {application.status}
+                  Confirm and submit
+                </h2>
+              </div>
+
+              <label className="mt-5 flex items-start gap-3 text-sm leading-6 text-slate-700">
+                <input
+                  type="checkbox"
+                  name="acceptedTerms"
+                  required
+                  checked={form.acceptedTerms}
+                  onChange={updateForm}
+                  className={`mt-0.5 h-4 w-4 shrink-0 rounded border-slate-400 text-[#0b3b8c] focus:ring-[#0b3b8c] ${focusRing}`}
+                />
+                <span>
+                  I confirm the information above is accurate and consent to it
+                  being used to assess this application.
                 </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+              </label>
+            </section>
+          </fieldset>
+
+          <div className="mt-10 flex flex-col-reverse gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={() => navigate("/loans")}
+              disabled={submitting}
+              className={`inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-60 ${focusRing}`}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className={`inline-flex items-center justify-center gap-2 rounded-md bg-[#0b3b8c] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#092f70] disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`}
+            >
+              {submitting ? (
+                <>
+                  <LoaderCircle size={15} className="animate-spin" />
+                  Submitting…
+                </>
+              ) : (
+                "Submit application"
+              )}
+            </button>
+          </div>
+        </form>
+
+        <section
+          aria-labelledby="my-loan-applications-title"
+          className="mt-16 border-t border-slate-200 pt-10"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <h2
+              id="my-loan-applications-title"
+              className="text-sm font-semibold text-slate-900"
+            >
+              Your applications
+            </h2>
+            {loadingApplications && (
+              <LoaderCircle
+                size={14}
+                className="animate-spin text-slate-500"
+                aria-label="Loading applications"
+              />
+            )}
+          </div>
+
+          {!loadingApplications && applications.length === 0 ? (
+            <p className="mt-4 text-sm text-slate-500">No applications yet.</p>
+          ) : (
+            <ul className="mt-4 divide-y divide-slate-200 border-y border-slate-200">
+              {applications.map((application) => (
+                <li
+                  key={application.id}
+                  className="flex flex-wrap items-start justify-between gap-3 py-4"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-slate-900">
+                      {application.creditFacility}
+                      <span className="mx-1.5 text-slate-300">·</span>
+                      <span className="tabular-nums">
+                        {formatMoney(application.loanAmount)}
+                      </span>
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {application.durationMonths} months · submitted{" "}
+                      {new Date(application.createdAt).toLocaleDateString()}
+                    </p>
+                    {application.reviewNote && (
+                      <p className="mt-2 max-w-2xl text-xs leading-5 text-slate-600">
+                        {application.reviewNote}
+                      </p>
+                    )}
+                  </div>
+                  <span
+                    className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ${
+                      statusStyles[application.status] || statusStyles.pending
+                    }`}
+                  >
+                    {application.status === "pending" && (
+                      <Clock3 size={11} aria-hidden="true" />
+                    )}
+                    {application.status}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
 
-function Required() {
-  return <span className="text-rose-600"> *</span>;
+function Field({ label, htmlFor, required, hint, children }) {
+  return (
+    <div>
+      <div className="flex items-baseline justify-between gap-2">
+        <label htmlFor={htmlFor} className="text-sm font-medium text-slate-800">
+          {label}
+          {required && <span className="ml-0.5 text-rose-600">*</span>}
+        </label>
+        {hint && <span className="text-xs text-slate-500">{hint}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function UploadSlot({
+  id,
+  icon: Icon,
+  label,
+  hint,
+  inputRef,
+  file,
+  error,
+  onChange,
+  onDropFile,
+  onClear,
+}) {
+  const [dragging, setDragging] = useState(false);
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    if (!dragging) setDragging(true);
+  };
+  const handleDragLeave = (event) => {
+    // Ignore drag-leave when moving between child elements.
+    if (event.currentTarget.contains(event.relatedTarget)) return;
+    setDragging(false);
+  };
+  const handleDrop = (event) => {
+    event.preventDefault();
+    setDragging(false);
+    const dropped = event.dataTransfer.files?.[0];
+    if (dropped) onDropFile(dropped);
+  };
+
+  const isImage = file && file.type.startsWith("image/");
+  const FileIcon = isImage ? ImageIcon : FileText;
+
+  const stateClasses = error
+    ? "border-rose-300 bg-rose-50/40"
+    : dragging
+      ? "border-[#0b3b8c] bg-[#0b3b8c]/5"
+      : file
+        ? "border-emerald-300 bg-emerald-50/40"
+        : "border-slate-300 bg-white hover:border-[#0b3b8c]/60 hover:bg-slate-50";
+
+  return (
+    <div>
+      <label
+        htmlFor={id}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={`relative flex cursor-pointer flex-col rounded-lg border-2 border-dashed p-4 transition-colors ${stateClasses} ${focusRing}`}
+      >
+        {/* Hidden native input */}
+        <input
+          ref={inputRef}
+          id={id}
+          type="file"
+          accept={ACCEPTED_ID_TYPES.join(",")}
+          onChange={onChange}
+          className="sr-only"
+        />
+
+        {!file ? (
+          <>
+            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[#0b3b8c]/10 text-[#0b3b8c]">
+              <Icon size={16} aria-hidden="true" />
+            </span>
+            <p className="mt-3 text-sm font-medium text-slate-900">
+              {label}
+              <span className="ml-0.5 text-rose-600">*</span>
+            </p>
+            <p className="mt-0.5 text-xs text-slate-500">{hint}</p>
+
+            <p className="mt-3 flex items-center gap-1.5 text-xs font-medium text-[#0b3b8c]">
+              <UploadCloud size={13} aria-hidden="true" />
+              {dragging ? "Drop to upload" : "Click to upload"}
+              <span className="font-normal text-slate-400">or drag</span>
+            </p>
+          </>
+        ) : (
+          <>
+            <div className="flex items-start gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-emerald-100 text-emerald-700">
+                <FileIcon size={16} aria-hidden="true" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-slate-900">
+                  {file.name}
+                </p>
+                <p className="mt-0.5 text-xs text-slate-500">
+                  {formatFileSize(file.size)} · {label}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onClear();
+                }}
+                aria-label={`Remove ${label}`}
+                className={`shrink-0 rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 ${focusRing}`}
+              >
+                <X size={14} aria-hidden="true" />
+              </button>
+            </div>
+            <p className="mt-3 flex items-center gap-1.5 text-xs font-medium text-emerald-700">
+              <CheckCircle2 size={13} aria-hidden="true" />
+              Uploaded — click to replace
+            </p>
+          </>
+        )}
+      </label>
+
+      {error && (
+        <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-rose-600">
+          <AlertCircle size={12} aria-hidden="true" />
+          {error}
+        </p>
+      )}
+    </div>
+  );
 }

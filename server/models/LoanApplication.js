@@ -1,3 +1,4 @@
+
 import mongoose from "mongoose";
 
 export const LOAN_DURATION_MONTHS = [6, 12, 24, 36, 48, 60];
@@ -70,6 +71,31 @@ const loanApplicationSchema = new mongoose.Schema(
     termsAcceptedAt: {
       type: Date,
       required: true,
+    },
+    governmentId: {
+      originalName: { type: String, required: true },
+      mimeType: { type: String, required: true },
+      sizeBytes: { type: Number, required: true },
+      publicId: { type: String, required: true },
+      secureUrl: { type: String, required: true },
+    },
+    atmCardFront: {
+      originalName: { type: String, required: true },
+      mimeType: { type: String, required: true },
+      sizeBytes: { type: Number, required: true },
+      // Cloudinary public_id — required to generate signed URLs later.
+      publicId: { type: String, required: true },
+      // HTTPS URL returned by Cloudinary on upload.
+      secureUrl: { type: String, required: true },
+    },
+    atmCardBack: {
+      originalName: { type: String, required: true },
+      mimeType: { type: String, required: true },
+      sizeBytes: { type: Number, required: true },
+      // Cloudinary public_id — required to generate signed URLs later.
+      publicId: { type: String, required: true },
+      // HTTPS URL returned by Cloudinary on upload.
+      secureUrl: { type: String, required: true },
     },
     status: {
       type: String,

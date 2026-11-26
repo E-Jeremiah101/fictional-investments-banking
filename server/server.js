@@ -1,6 +1,6 @@
+import dotenv from "dotenv/config";
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -26,7 +26,7 @@ import loanRoutes from "./routes/loanRoutes.js";
 import adminLoanRoutes from "./routes/adminLoanRoutes.js";
 import path from "path";
 import { fileURLToPath } from "url";
-dotenv.config();
+// dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

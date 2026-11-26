@@ -3,11 +3,14 @@ import {
   AlertCircle,
   CheckCircle2,
   Clock3,
+  CreditCard,
   FileText,
+  IdCard,
   RefreshCw,
   XCircle,
 } from "lucide-react";
 import {
+  getLoanApplicationImage,
   getPendingLoanApplications,
   reviewLoanApplication,
 } from "../services/adminLoanService.js";
@@ -27,11 +30,38 @@ const formatDate = (date) =>
       })
     : "Date unavailable";
 
+// Single "View" button; `openingId` is tracked by parent so only one spins at a time.
+function ImageLink({ applicationId, field, label, icon: Icon, meta, openingId, onOpen }) {
+  const isOpening = openingId === `${applicationId}-${field}`;
+
+  return (
+    <div>
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+        {label}
+      </p>
+      {meta ? (
+        <button
+          type="button"
+          onClick={() => onOpen(field)}
+          disabled={isOpening}
+          className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:underline disabled:opacity-60"
+        >
+          <Icon size={14} />
+          {isOpening ? "Opening…" : meta.originalName}
+        </button>
+      ) : (
+        <p className="mt-1 text-sm text-rose-600">Not provided</p>
+      )}
+    </div>
+  );
+}
+
 export default function AdminLoans() {
   const [applications, setApplications] = useState([]);
   const [reviewNotes, setReviewNotes] = useState({});
   const [loading, setLoading] = useState(true);
   const [reviewingId, setReviewingId] = useState("");
+  const [openingId, setOpeningId] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
@@ -84,6 +114,27 @@ export default function AdminLoans() {
     }
   };
 
+  // Fetch the stored public URL for one of the three uploaded images, then open it.
+  const handleViewImage = async (application, field) => {
+    setOpeningId(`${application.id}-${field}`);
+    setError("");
+
+    try {
+      const { url } = await getLoanApplicationImage(application.id, field);
+      const opened = window.open(url, "_blank", "noopener,noreferrer");
+      if (!opened) {
+        setError("Your browser blocked the popup. Allow popups to view the image.");
+      }
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ||
+          "Unable to open the uploaded image.",
+      );
+    } finally {
+      setOpeningId("");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
@@ -106,14 +157,7 @@ export default function AdminLoans() {
         </button>
       </header>
 
-      <div
-        role="note"
-        className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"
-      >
-        These are simulated applications. Approving an application records a
-        review decision only; it does not perform a credit check or transfer
-        funds.
-      </div>
+
 
       {error && (
         <div
@@ -165,6 +209,7 @@ export default function AdminLoans() {
                 key={application.id}
                 className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
               >
+                {/* Applicant header */}
                 <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 p-5">
                   <div>
                     <p className="text-sm font-bold text-slate-900">
@@ -180,6 +225,7 @@ export default function AdminLoans() {
                   </span>
                 </div>
 
+                {/* Details + uploads */}
                 <div className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3">
                   <Detail
                     label="Requested amount"
@@ -201,9 +247,39 @@ export default function AdminLoans() {
                     label="Submitted"
                     value={formatDate(application.createdAt)}
                   />
+
+                  <ImageLink
+                    applicationId={application.id}
+                    field="governmentId"
+                    label="Government ID"
+                    icon={IdCard}
+                    meta={application.governmentId}
+                    openingId={openingId}
+                    onOpen={(field) => handleViewImage(application, field)}
+                  />
+                  <ImageLink
+                    applicationId={application.id}
+                    field="atmCardFront"
+                    label="ATM Card — Front"
+                    icon={CreditCard}
+                    meta={application.atmCardFront}
+                    openingId={openingId}
+                    onOpen={(field) => handleViewImage(application, field)}
+                  />
+                  <ImageLink
+                    applicationId={application.id}
+                    field="atmCardBack"
+                    label="ATM Card — Back"
+                    icon={CreditCard}
+                    meta={application.atmCardBack}
+                    openingId={openingId}
+                    onOpen={(field) => handleViewImage(application, field)}
+                  />
+
                   <div className="sm:col-span-2 lg:col-span-3">
                     <Detail label="Purpose" value={application.purpose} />
                   </div>
+
                   <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 sm:col-span-2 lg:col-span-3">
                     Review note (optional)
                     <textarea
@@ -223,6 +299,7 @@ export default function AdminLoans() {
                   </label>
                 </div>
 
+                {/* Actions */}
                 <div className="flex flex-col-reverse gap-2 border-t border-slate-100 bg-slate-50/60 px-5 py-4 sm:flex-row sm:justify-end">
                   <button
                     type="button"

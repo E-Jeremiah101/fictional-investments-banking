@@ -9,3 +9,8 @@ export const reviewLoanApplication = async (id, payload) => {
   const response = await api.patch(`/admin/loans/${id}/review`, payload);
   return response.data;
 };
+
+export const getLoanApplicationImage = async (id, field) => {
+  const response = await api.get(`/admin/loans/${id}/image/${field}`);
+  return response.data; // { success, url, originalName, mimeType }
+};
