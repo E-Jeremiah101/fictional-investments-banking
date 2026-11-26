@@ -148,11 +148,9 @@ function Hero() {
       >
       
 
-        <div className=" text-slate-600  sm:p-8">
-          <h1>Find the right loan for your plans</h1>
-          <h2 className="text-lg font-bold text-slate-900">
-            Before you apply, have these ready
-          </h2>
+        <div className="text-slate-600  sm:p-8">
+          <h1 className="font-bold text-lg text-slate-800">Find the right loan for your plans</h1>
+    
           <ul className="mt-5 divide-y divide-slate-100">
             {documents.map(({ title, detail }) => (
               <li
